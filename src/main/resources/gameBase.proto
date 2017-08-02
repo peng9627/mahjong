@@ -7,6 +7,44 @@ message BaseConnection {
     bytes data = 2; //数据
 }
 
+//回放
+message ReplayResponse {
+    repeated OperationHistory history = 1; //操作记录
+}
+
+//操作记录
+message OperationHistory {
+    string ID = 1; //操作玩家
+    OperationId operationId = 2; //操作id
+    repeated uint32 card = 3; //牌
+}
+
+//动作请求数据
+message BaseAction {
+    OperationId operationId = 1;
+    bytes data = 2; //数据
+}
+
+//询问数据
+message AskResponse {
+    repeated OperationId operationId = 1;
+}
+
+//通知回合
+message RoundResponse {
+    string ID = 1; //当前操作的人
+}
+
+//准备返回
+message ReadyResponse {
+    string ID = 1; //用户名
+}
+
+//错误
+message ErrorResponse {
+    ErrorCode errorCode = 1;
+}
+
 //消息id
 enum OperationType {
 

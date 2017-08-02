@@ -17,7 +17,6 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 /**
  * Created date 2016/3/25
@@ -32,7 +31,6 @@ public class MahjongClient implements Runnable {
     private String user;
     private RedisService redisService;
     private String roomNo;
-    private double score;
     private Boolean connect;
     private byte[] md5Key = "2704031cd4814eb2a82e47bd1d9042c6".getBytes();
 
@@ -61,7 +59,7 @@ public class MahjongClient implements Runnable {
         response = GameBase.BaseConnection.newBuilder();
     }
 
-    public void send(MessageLite lite, String username) {
+    private void send(MessageLite lite, String username) {
         try {
             if (MahjongTcpService.userClients.containsKey(username)) {
                 synchronized (MahjongTcpService.userClients.get(username).os) {
@@ -80,7 +78,7 @@ public class MahjongClient implements Runnable {
         }
     }
 
-    public void close() {
+    private void close() {
         connect = false;
         try {
             if (is != null)
@@ -140,8 +138,7 @@ public class MahjongClient implements Runnable {
                 byte[] data = new byte[len];
                 boolean check = true;
                 if (0 != len) {
-                    int l = is.read(data);
-                    check = CoreStringUtils.md5(ByteUtils.addAll(md5Key, data), 32, false).equalsIgnoreCase(md5);
+                    check = len == is.read(data) && CoreStringUtils.md5(ByteUtils.addAll(md5Key, data), 32, false).equalsIgnoreCase(md5);
                 }
                 if (check) {
                     request = GameBase.BaseConnection.parseFrom(data);
@@ -159,7 +156,6 @@ public class MahjongClient implements Runnable {
                             if (redisService.exists("room" + roomNo)) {
                                 redisService.lock("lock_room" + roomNo);
                                 Room room = JSON.parseObject(redisService.getCache("room" + roomNo), Room.class);
-                                score = room.getBaseScore();
                                 //房间是否已存在当前用户，存在则为重连
                                 final boolean[] find = {false};
                                 room.getSeats().stream().filter(seat -> seat.getUserName().equals(user)).forEach(seat -> find[0] = true);
@@ -303,9 +299,8 @@ public class MahjongClient implements Runnable {
                             if (redisService.exists("room" + roomNo)) {
                                 redisService.lock("lock_room" + roomNo);
                                 Room room = JSON.parseObject(redisService.getCache("room" + roomNo), Room.class);
-                                room.getSeats().stream().filter(seat -> seat.getUserName().equals(user) && !seat.isCompleted()).forEach(seat -> {
-                                    seat.setCompleted(true);
-                                });
+                                room.getSeats().stream().filter(seat -> seat.getUserName().equals(user) && !seat.isCompleted())
+                                        .forEach(seat -> seat.setCompleted(true));
                                 boolean allCompleted = true;
                                 for (Seat seat : room.getSeats()) {
                                     if (!seat.isCompleted()) {
@@ -816,7 +811,7 @@ public class MahjongClient implements Runnable {
      *
      * @param room 桌数据
      */
-    public void getCard(Room room) {
+    private void getCard(Room room) {
         getCard(room, room.getNextSeat());
     }
 
@@ -825,7 +820,7 @@ public class MahjongClient implements Runnable {
      *
      * @param room 桌数据
      */
-    public void getCard(Room room, int seatNo) {
+    private void getCard(Room room, int seatNo) {
         if (0 == room.getSurplusCards().size()) {
             gameOver(room);
         }
@@ -919,49 +914,5 @@ public class MahjongClient implements Runnable {
         roomNos.remove(roomNo);
         redisService.addCache("room_nos", JSON.toJSONString(roomNos), 86400);
         redisService.unlock("lock_room_nos" + roomNo);
-    }
-
-    /**
-     * 判断是不是在游戏中了
-     *
-     * @return 玩家所在桌号
-     */
-    private String isGamePlayer() {
-
-        redisService.lock("lock_room_nos" + roomNo);
-        List<String> roomNos = JSON.parseArray(redisService.getCache("room_nos"), String.class);
-        for (String roomNo : roomNos) {
-            if (redisService.exists("room" + roomNo)) {
-                redisService.lock("lock_room" + roomNo);
-                Room room1 = JSON.parseObject(redisService.getCache("room" + roomNo), Room.class);
-                for (Seat seat : room1.getSeats()) {
-                    if (seat.getUserName().equals(user)) {
-                        redisService.unlock("lock_room" + roomNo);
-                        redisService.addCache("room_nos", JSON.toJSONString(roomNos), 86400);
-                        redisService.unlock("lock_room_nos" + roomNo);
-                        return roomNo;
-                    }
-                }
-                redisService.unlock("lock_room" + roomNo);
-            } else {
-                roomNos.remove(roomNo);
-            }
-        }
-        redisService.addCache("room_nos", JSON.toJSONString(roomNos), 86400);
-        redisService.unlock("lock_room_nos" + roomNo);
-        return null;
-    }
-
-    /**
-     * 生成随机桌号
-     *
-     * @return 桌号
-     */
-    private String roomNo() {
-        String roomNo = UUID.randomUUID().toString();
-        if (redisService.exists(roomNo)) {
-            roomNo = roomNo();
-        }
-        return roomNo;
     }
 }
