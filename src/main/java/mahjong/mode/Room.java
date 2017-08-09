@@ -18,23 +18,14 @@ public class Room {
     private List<Integer> surplusCards;//剩余的牌
     private GameStatus gameStatus;
 
-    private String lastOperation;
+    private int lastOperation;
 
-    private String banker;//庄家
+    private int banker;//庄家
     private int gameTimes; //游戏局数
     private int count;//人数
     private boolean dianpao;//点炮
     private Integer[] dice;//骰子
-
-    public Room(Double baseScore, String roomNo, String banker, int gameTimes, int count, boolean dianpao) {
-        this.baseScore = baseScore;
-        this.roomNo = roomNo;
-        this.banker = banker;
-        this.gameTimes = gameTimes;
-        this.count = count;
-        this.dianpao = dianpao;
-        this.gameStatus = GameStatus.WAITING;
-    }
+    private List<Record> recordList;//战绩
 
     public Double getBaseScore() {
         return baseScore;
@@ -92,19 +83,19 @@ public class Room {
         this.gameStatus = gameStatus;
     }
 
-    public String getLastOperation() {
+    public int getLastOperation() {
         return lastOperation;
     }
 
-    public void setLastOperation(String lastOperation) {
+    public void setLastOperation(int lastOperation) {
         this.lastOperation = lastOperation;
     }
 
-    public String getBanker() {
+    public int getBanker() {
         return banker;
     }
 
-    public void setBanker(String banker) {
+    public void setBanker(int banker) {
         this.banker = banker;
     }
 
@@ -140,6 +131,14 @@ public class Room {
         this.dice = dice;
     }
 
+    public List<Record> getRecordList() {
+        return recordList;
+    }
+
+    public void setRecordList(List<Record> recordList) {
+        this.recordList = recordList;
+    }
+
     public void addSeat(User user) {
         Seat seat = new Seat();
         seat.setRobot(false);
@@ -148,7 +147,7 @@ public class Room {
         seat.setGold(0);
         seat.setScore(0);
         seat.setSeatNo(seats.size() + 1);
-        seat.setUserName(user.getUsername());
+        seat.setUserId(user.getId());
         seats.add(seat);
     }
 
@@ -163,6 +162,7 @@ public class Room {
                     surplusCards.remove(cardIndex);
                 }
                 seat.setCards(cardList);
+                seat.setInitialCards(cardList);
             }
             int cardIndex = (int) (Math.random() * surplusCards.size());
             seats.get(0).getCards().add(surplusCards.get(cardIndex));
@@ -179,5 +179,34 @@ public class Room {
             next += 1;
         }
         return next;
+    }
+
+    public void gameOver() {
+        Record record = new Record();
+        record.setDice(dice);
+        List<SeatRecord> seatRecords = new ArrayList<>();
+        seats.forEach(seat -> {
+            SeatRecord seatRecord = new SeatRecord();
+            seatRecord.setUserId(seat.getUserId());
+            seatRecord.setCardResult(seat.getCardResult());
+            seatRecord.setGangResult(seat.getGangResult());
+            seatRecord.setInitialCards(seat.getInitialCards());
+            final int[] winOrLose = {0};
+            seat.getGangResult().forEach(gameResult -> winOrLose[0] += gameResult.getScore());
+            if (null != seat.getCardResult()) {
+                winOrLose[0] += seat.getCardResult().getScore();
+            }
+            seatRecord.setWinOrLoce(winOrLose[0]);
+            seatRecords.add(seatRecord);
+        });
+        record.setSeatRecordList(seatRecords);
+        record.setHistoryList(historyList);
+
+        historyList.clear();
+        surplusCards.clear();
+        gameStatus = GameStatus.READYING;
+        lastOperation = 0;
+        dice = null;
+        seats.forEach(Seat::clear);
     }
 }

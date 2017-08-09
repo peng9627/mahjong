@@ -9,13 +9,15 @@ import java.util.List;
 public class GameResult {
 
     private List<ScoreType> scoreTypes;
-    private double score;
+    private Integer card;
+    private int score;
 
     public GameResult() {
     }
 
-    public GameResult(List<ScoreType> scoreTypes, double score) {
+    public GameResult(List<ScoreType> scoreTypes, Integer card, int score) {
         this.scoreTypes = scoreTypes;
+        this.card = card;
         this.score = score;
     }
 
@@ -27,11 +29,19 @@ public class GameResult {
         this.scoreTypes = scoreTypes;
     }
 
-    public double getScore() {
+    public Integer getCard() {
+        return card;
+    }
+
+    public void setCard(Integer card) {
+        this.card = card;
+    }
+
+    public int getScore() {
         return score;
     }
 
-    public void setScore(double score) {
+    public void setScore(int score) {
         this.score = score;
     }
 }

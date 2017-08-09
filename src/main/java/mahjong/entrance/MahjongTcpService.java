@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
  */
 public class MahjongTcpService implements Runnable {
 
-    public static Map<String, MahjongClient> userClients = new HashMap<>();
+    public static Map<Integer, MahjongClient> userClients = new HashMap<>();
     private ServerSocket serverSocket;
     private boolean started = false;
     private Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -80,7 +80,7 @@ public class MahjongUtil {
         List<Integer> cards = new ArrayList<>();
         cards.addAll(cardList);
         cards.sort(Integer::compareTo);
-        List<Integer> san_arr = new ArrayList<>();
+        List<Integer> sun_arr = new ArrayList<>();
         List<Integer> temp = new ArrayList<>();
         temp.addAll(cards);
         while (temp.size() > 2) {
@@ -89,12 +89,12 @@ public class MahjongUtil {
                 int start = temp.get(i);
                 if (temp.get(i) < 30) {
                     if (cards.contains(start + 1) && cards.contains(start + 2)) {
-                        san_arr.add(start);
-                        san_arr.add(start);
-                        san_arr.add(start);
+                        sun_arr.add(start);
+                        sun_arr.add(start + 1);
+                        sun_arr.add(start + 2);
                         temp.remove(Integer.valueOf(start));
-                        temp.remove(Integer.valueOf(start));
-                        temp.remove(Integer.valueOf(start));
+                        temp.remove(Integer.valueOf(start + 1));
+                        temp.remove(Integer.valueOf(start + 2));
                         find = true;
                         break;
                     }
@@ -104,7 +104,7 @@ public class MahjongUtil {
                 break;
             }
         }
-        return san_arr;
+        return sun_arr;
     }
 
     /**
@@ -579,10 +579,11 @@ public class MahjongUtil {
      * 牌型
      *
      * @param cards         手牌
-     * @param invertedCards 碰或杠的牌
+     * @param pengCards 碰的牌
+     * @param gangCard 杠的牌
      * @return
      */
-    public static List<ScoreType> getHuType(List<Integer> cards, List<Integer> invertedCards) {
+    public static List<ScoreType> getHuType(List<Integer> cards, List<Integer> pengCards, List<Integer> gangCard) {
         List<ScoreType> scoreTypes = new ArrayList<>();
 
         //门清
@@ -599,12 +600,13 @@ public class MahjongUtil {
 
         List<Integer> allCard = new ArrayList<>();
         allCard.addAll(cards);
-        allCard.addAll(invertedCards);
+        allCard.addAll(pengCards);
+        allCard.addAll(gangCard);
 
         //清一色，混一色
-        if ((!Card.hasTong(allCard) && !Card.hasTiao(allCard)) || (!Card.hasTong(allCard) && !Card.hasWan(allCard))
-                || (!Card.hasTiao(allCard) && !Card.hasWan(allCard))) {
-            if (!Card.hasFeng(allCard) && !Card.hasZi(allCard)) {
+        if ((!Card.hasSameColor(allCard, 0) && !Card.hasSameColor(allCard, 1)) || (!Card.hasSameColor(allCard, 0) && !Card.hasSameColor(allCard, 2))
+                || (!Card.hasSameColor(allCard, 1) && !Card.hasSameColor(allCard, 2))) {
+            if (!Card.hasSameColor(allCard, 3) && !Card.hasSameColor(allCard, 4)) {
                 scoreTypes.add(ScoreType.QINGYISE_HU);
             } else {
                 scoreTypes.add(ScoreType.HUNYISE_HU);
@@ -632,7 +634,7 @@ public class MahjongUtil {
 
         //幺九
         if (Card.isYJ(allCard)) {
-            if (!Card.hasFeng(allCard) && !Card.hasZi(allCard)) {
+            if (!Card.hasSameColor(allCard, 3) && !Card.hasSameColor(allCard, 4)) {
                 scoreTypes.add(ScoreType.QUANYAOJIU_HU);
             } else {
                 scoreTypes.add(ScoreType.HUNYAOJIU_HU);

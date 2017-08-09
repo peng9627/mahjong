@@ -25,7 +25,7 @@ public enum ScoreType {
     QUANFENG_HU("全风", 17),
     SHUANGHAOHUAQIXIAODUI_HU("双豪华七小对", 18),
     SANHAOHUAQIXIAODUI_HU("三豪华七小对", 19),
-    WUHONGZHONG_HU("无红中", 20),;
+    WUHONGZHONG_HU("无红中", 20);
 
     private String name;
     private Integer values;

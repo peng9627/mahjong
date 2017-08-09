@@ -6,25 +6,25 @@ package mahjong.mode;
  */
 public class OperationHistory {
 
-    private String userName;
+    private int userId;
     private OperationHistoryType historyType;
     private Integer card;
 
     public OperationHistory() {
     }
 
-    public OperationHistory(String userName, OperationHistoryType historyType, Integer card) {
-        this.userName = userName;
+    public OperationHistory(int userId, OperationHistoryType historyType, Integer card) {
+        this.userId = userId;
         this.historyType = historyType;
         this.card = card;
     }
 
-    public String getUserName() {
-        return userName;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     public OperationHistoryType getHistoryType() {

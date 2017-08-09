@@ -9,19 +9,22 @@ import java.util.List;
 public class Seat {
 
     private int seatNo;                         //座位号
-    private String userName;                    //用户名
-    private float gold;                         //金币
+    private int userId;                         //用户名
+    private int gold;                           //金币
+    private List<Integer> initialCards;         //初始牌
     private List<Integer> cards;                //牌
-    private List<Integer> invertedCards;        //碰或杠的牌
-    private List<Integer> invertedIndex;        //碰或杠下标 自己为扒杠，0为暗杠
+    private List<Integer> pengCards;            //碰牌
+    private List<Integer> gangCards;            //杠的牌
+    private List<Integer> chiCards;             //吃的牌
     private List<Integer> playedCards;          //出牌
-    private float score;                        //输赢分数
+    private int score;                          //输赢分数
     private String areaString;                  //地区
     private boolean isRobot;                    //是否托管
     private int operation;                      //标识，0.未操作，1.胡，2.杠，3.碰，4.过
     private boolean ready;                      //准备
     private boolean completed;                  //就绪
-    private List<GameResult> gameResults;       //结算
+    private GameResult cardResult;              //结算
+    private List<GameResult> gangResult;        //杠
 
     public int getSeatNo() {
         return seatNo;
@@ -31,20 +34,28 @@ public class Seat {
         this.seatNo = seatNo;
     }
 
-    public String getUserName() {
-        return userName;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public float getGold() {
+    public int getGold() {
         return gold;
     }
 
-    public void setGold(float gold) {
+    public void setGold(int gold) {
         this.gold = gold;
+    }
+
+    public List<Integer> getInitialCards() {
+        return initialCards;
+    }
+
+    public void setInitialCards(List<Integer> initialCards) {
+        this.initialCards = initialCards;
     }
 
     public List<Integer> getCards() {
@@ -55,20 +66,28 @@ public class Seat {
         this.cards = cards;
     }
 
-    public List<Integer> getInvertedCards() {
-        return invertedCards;
+    public List<Integer> getPengCards() {
+        return pengCards;
     }
 
-    public void setInvertedCards(List<Integer> invertedCards) {
-        this.invertedCards = invertedCards;
+    public void setPengCards(List<Integer> pengCards) {
+        this.pengCards = pengCards;
     }
 
-    public List<Integer> getInvertedIndex() {
-        return invertedIndex;
+    public List<Integer> getGangCards() {
+        return gangCards;
     }
 
-    public void setInvertedIndex(List<Integer> invertedIndex) {
-        this.invertedIndex = invertedIndex;
+    public void setGangCards(List<Integer> gangCards) {
+        this.gangCards = gangCards;
+    }
+
+    public List<Integer> getChiCards() {
+        return chiCards;
+    }
+
+    public void setChiCards(List<Integer> chiCards) {
+        this.chiCards = chiCards;
     }
 
     public List<Integer> getPlayedCards() {
@@ -79,11 +98,11 @@ public class Seat {
         this.playedCards = playedCards;
     }
 
-    public float getScore() {
+    public int getScore() {
         return score;
     }
 
-    public void setScore(float score) {
+    public void setScore(int score) {
         this.score = score;
     }
 
@@ -127,11 +146,32 @@ public class Seat {
         this.completed = completed;
     }
 
-    public List<GameResult> getGameResults() {
-        return gameResults;
+    public GameResult getCardResult() {
+        return cardResult;
     }
 
-    public void setGameResults(List<GameResult> gameResults) {
-        this.gameResults = gameResults;
+    public void setCardResult(GameResult cardResult) {
+        this.cardResult = cardResult;
+    }
+
+    public List<GameResult> getGangResult() {
+        return gangResult;
+    }
+
+    public void setGangResult(List<GameResult> gangResult) {
+        this.gangResult = gangResult;
+    }
+
+    public void clear() {
+        initialCards.clear();
+        cards.clear();
+        pengCards.clear();
+        gangCards.clear();
+        chiCards.clear();
+        playedCards.clear();
+        ready = false;
+        completed = false;
+        cardResult = null;
+        gangResult.clear();
     }
 }
