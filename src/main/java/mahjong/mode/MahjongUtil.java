@@ -1,7 +1,6 @@
 package mahjong.mode;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Author pengyi
@@ -578,9 +577,9 @@ public class MahjongUtil {
     /**
      * 牌型
      *
-     * @param cards         手牌
+     * @param cards     手牌
      * @param pengCards 碰的牌
-     * @param gangCard 杠的牌
+     * @param gangCard  杠的牌
      * @return
      */
     public static List<ScoreType> getHuType(List<Integer> cards, List<Integer> pengCards, List<Integer> gangCard) {
@@ -705,5 +704,58 @@ public class MahjongUtil {
             score = 20;
         }
         return score;
+    }
+
+    private static Map<Integer, Integer> cardsSize(List<Integer> mahjongs) {
+        Map<Integer, Integer> dic = new HashMap<>();
+        for (Integer card : mahjongs) {
+            if (dic.containsKey(card)) {
+                dic.put(card, dic.get(card) + 1);
+            } else {
+                dic.put(card, 1);
+            }
+        }
+        return dic;
+    }
+
+
+    public static int findPairNumber(List<Integer> mahjongs) {
+        int number = 0;
+        int single = 0;
+        Map<Integer, Integer> dic = cardsSize(mahjongs);
+        for (int i = 0; i < mahjongs.size(); i++) {
+            int mahjong = mahjongs.get(i);
+            if (dic.containsKey(mahjong)) {
+                int count = dic.get(mahjong);
+                if (count > 1) {
+                    if (count == 2 || count == 4) number++;
+                    else single++;
+                }
+            }
+        }
+        return number / 2 + single / 3;
+    }
+
+    public static ArrayList<Integer> getComputePossible(List<Integer> hand_list, int number) {
+        Set<Integer> ret = new HashSet<>();
+        for (int i = 0; i < hand_list.size(); i++) {
+            int mahjong = hand_list.get(i);
+            if (!ret.contains(mahjong)) {
+                ret.add(mahjong);
+            }
+            int stepNum = 1;
+            do {
+                if (!ret.contains(mahjong - stepNum) && Card.legal(mahjong - stepNum)) {
+                    ret.add(mahjong - stepNum);
+                }
+                if (!ret.contains(mahjong + stepNum) && Card.legal(mahjong + stepNum)) {
+                    ret.add(mahjong + stepNum);
+                }
+                stepNum++;
+            } while (stepNum <= number);
+        }
+        ArrayList<Integer> cards = new ArrayList<>();
+        cards.addAll(ret);
+        return cards;
     }
 }

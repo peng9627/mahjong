@@ -1,5 +1,6 @@
 package mahjong.mode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -19,10 +20,10 @@ public class Card {
     }
 
     public static List<Integer> getAllCard() {
-        return Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+        return new ArrayList<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1, 2, 3, 4, 5, 6, 7, 8, 9,
                 11, 12, 13, 14, 15, 16, 17, 18, 19, 11, 12, 13, 14, 15, 16, 17, 18, 19, 11, 12, 13, 14, 15, 16, 17, 18, 19, 11, 12, 13, 14, 15, 16, 17, 18, 19,
                 21, 22, 23, 24, 25, 26, 27, 28, 29, 21, 22, 23, 24, 25, 26, 27, 28, 29, 21, 22, 23, 24, 25, 26, 27, 28, 29, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-                31, 33, 35, 41, 43, 45, 47, 31, 33, 35, 41, 43, 45, 47, 31, 33, 35, 41, 43, 45, 47, 31, 33, 35, 41, 43, 45, 47);
+                31, 33, 35, 41, 43, 45, 47, 31, 33, 35, 41, 43, 45, 47, 31, 33, 35, 41, 43, 45, 47, 31, 33, 35, 41, 43, 45, 47));
     }
 
     public static boolean containAll(List<Integer> cardList, List<Integer> cards) {
@@ -107,5 +108,45 @@ public class Card {
     public static boolean isQF(List<Integer> cardList) {
         List<Integer> cards = Arrays.asList(41, 43, 45, 47);
         return containAll(cardList, cards) && containAll(cards, cardList);
+    }
+
+    public static boolean legal(int card) {
+        return getAllCard().contains(card);
+    }
+
+    /**
+     * 买中自己的
+     *
+     * @return
+     */
+    public static List<Integer> ma_my() {
+        return Arrays.asList(1, 5, 9, 11, 15, 19, 21, 25, 29, 41);
+    }
+
+    /**
+     * 买中下家
+     *
+     * @return
+     */
+    public static List<Integer> ma_next() {
+        return Arrays.asList(2, 6, 12, 16, 22, 26, 31, 43);
+    }
+
+    /**
+     * 买中对家
+     *
+     * @return
+     */
+    public static List<Integer> ma_opposite() {
+        return Arrays.asList(3, 7, 13, 17, 23, 27, 33, 45);
+    }
+
+    /**
+     * 买中上家
+     *
+     * @return
+     */
+    public static List<Integer> ma_last() {
+        return Arrays.asList(4, 8, 14, 18, 24, 28, 35, 47);
     }
 }
