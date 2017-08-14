@@ -446,7 +446,7 @@ public class MahjongClient implements Runnable {
                                         break;
                                     case PENG:
                                         room.getSeats().stream().filter(seat -> seat.getUserId() == userId &&
-                                                room.getOperationSeatNo() == seat.getSeatNo()).forEach(seat -> seat.setOperation(3));
+                                                room.getOperationSeatNo() != seat.getSeatNo()).forEach(seat -> seat.setOperation(3));
                                         if (room.checkSurplus()) { //如果可以碰、杠牌，则碰、杠
                                             room.pengOrGang(actionResponse, response, redisService, userId);
                                         }
@@ -458,14 +458,14 @@ public class MahjongClient implements Runnable {
                                         break;
                                     case DIAN_GANG:
                                         room.getSeats().stream().filter(seat -> seat.getUserId() == userId &&
-                                                room.getOperationSeatNo() == seat.getSeatNo()).forEach(seat -> seat.setOperation(2));
+                                                room.getOperationSeatNo() != seat.getSeatNo()).forEach(seat -> seat.setOperation(2));
                                         if (room.checkSurplus()) { //如果可以碰、杠牌，则碰、杠
                                             room.pengOrGang(actionResponse, response, redisService, userId);
                                         }
                                         break;
                                     case HU:
                                         room.getSeats().stream().filter(seat -> seat.getUserId() == userId &&
-                                                room.getOperationSeatNo() == seat.getSeatNo()).forEach(seat -> seat.setOperation(1));
+                                                room.getOperationSeatNo() != seat.getSeatNo()).forEach(seat -> seat.setOperation(1));
                                         room.hu(userId, response, redisService);//胡
                                         break;
                                     case PASS:

@@ -328,7 +328,7 @@ class JxCalculate(private val handList: ArrayList<Int>, private val lai_majong: 
         val partition = list.partition { it / 10 == color }
         val sublist = partition.first as ArrayList<Int>
         val number = hun + replace.size
-        if (4 == color) {
+        if (2 < color) {
             if (subFengLug(majong, sublist, replace, hun))
                 return lug(partition.second as ArrayList<Int>, replace, number - replace.size)
         } else {
