@@ -149,4 +149,24 @@ public class Card {
     public static List<Integer> ma_last() {
         return Arrays.asList(4, 8, 14, 18, 24, 28, 35, 47);
     }
+
+    public static void remove(List<Integer> cards, Integer card) {
+        for (Integer card1 : cards) {
+            if (card1.intValue() == card) {
+                cards.remove(card1);
+                return;
+            }
+        }
+    }
+
+    public static void removeAll(List<Integer> cards, List<Integer> removes) {
+        for (Integer card : removes) {
+            for (Integer card1 : cards) {
+                if (card1.intValue() == card) {
+                    cards.remove(card1);
+                    break;
+                }
+            }
+        }
+    }
 }
