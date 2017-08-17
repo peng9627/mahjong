@@ -102,7 +102,7 @@ public class MahjongClient implements Runnable {
                             }
                         }
 
-                        Xingning.XingningMahjongGameInfo.Builder gameInfo = Xingning.XingningMahjongGameInfo.newBuilder().setGameStatus(GameBase.GameStatus.PLAYING);
+                        Mahjong.MahjongGameInfo.Builder gameInfo = Mahjong.MahjongGameInfo.newBuilder().setGameStatus(GameBase.GameStatus.PLAYING);
                         Seat operationSeat = null;
                         for (Seat seat : room.getSeats()) {
                             if (seat.getSeatNo() == room.getOperationSeatNo()) {
@@ -113,7 +113,7 @@ public class MahjongClient implements Runnable {
                         gameInfo.setOperationUser(operationSeat.getUserId());
                         gameInfo.setLastOperationUser(room.getLastOperation());
                         for (Seat seat1 : room.getSeats()) {
-                            Xingning.XingningMahjongSeatGameInfo.Builder seatResponse = Xingning.XingningMahjongSeatGameInfo.newBuilder();
+                            Mahjong.MahjongSeatGameInfo.Builder seatResponse = Mahjong.MahjongSeatGameInfo.newBuilder();
                             seatResponse.setID(seat1.getUserId());
                             seatResponse.setIsRobot(seat1.isRobot());
                             if (null != seat1.getInitialCards()) {
@@ -206,7 +206,7 @@ public class MahjongClient implements Runnable {
 
                             GameBase.RoomCardIntoResponse.Builder roomCardIntoResponseBuilder = GameBase.RoomCardIntoResponse.newBuilder();
                             roomCardIntoResponseBuilder.setGameType(GameBase.GameType.MAHJONG_XINGNING);
-                            Xingning.XingningIntoResponse.Builder intoResponseBuilder = Xingning.XingningIntoResponse.newBuilder();
+                            Mahjong.MahjongIntoResponse.Builder intoResponseBuilder = Mahjong.MahjongIntoResponse.newBuilder();
                             if (redisService.exists("room" + roomNo)) {
                                 while (!redisService.lock("lock_room" + roomNo)) {
                                 }
@@ -231,7 +231,6 @@ public class MahjongClient implements Runnable {
                                 intoResponseBuilder.setRoomNo(roomNo);
                                 intoResponseBuilder.setBaseScore(room.getBaseScore());
                                 intoResponseBuilder.setCount(room.getCount());
-                                intoResponseBuilder.setDianpao(room.isDianpao());
                                 intoResponseBuilder.setGameTimes(room.getGameTimes());
                                 roomCardIntoResponseBuilder.setError(GameBase.ErrorCode.SUCCESS);
                                 roomCardIntoResponseBuilder.setData(intoResponseBuilder.build().toByteString());
@@ -256,7 +255,7 @@ public class MahjongClient implements Runnable {
                                     }
                                 }
                                 if (0 != room.getGameStatus().compareTo(GameStatus.WAITING)) {
-                                    Xingning.XingningMahjongGameInfo.Builder gameInfo = Xingning.XingningMahjongGameInfo.newBuilder().setGameStatus(GameBase.GameStatus.PLAYING);
+                                    Mahjong.MahjongGameInfo.Builder gameInfo = Mahjong.MahjongGameInfo.newBuilder().setGameStatus(GameBase.GameStatus.PLAYING);
                                     Seat operationSeat = null;
                                     for (Seat seat : room.getSeats()) {
                                         if (seat.getSeatNo() == room.getOperationSeatNo()) {
@@ -267,7 +266,7 @@ public class MahjongClient implements Runnable {
                                     gameInfo.setOperationUser(operationSeat.getUserId());
                                     gameInfo.setLastOperationUser(room.getLastOperation());
                                     for (Seat seat1 : room.getSeats()) {
-                                        Xingning.XingningMahjongSeatGameInfo.Builder seatResponse = Xingning.XingningMahjongSeatGameInfo.newBuilder();
+                                        Mahjong.MahjongSeatGameInfo.Builder seatResponse = Mahjong.MahjongSeatGameInfo.newBuilder();
                                         seatResponse.setID(seat1.getUserId());
                                         seatResponse.setIsRobot(seat1.isRobot());
                                         if (null != seat1.getInitialCards()) {
