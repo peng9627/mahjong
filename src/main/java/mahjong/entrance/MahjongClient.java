@@ -1,11 +1,14 @@
 package mahjong.entrance;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.google.protobuf.GeneratedMessageV3;
 import mahjong.mode.*;
 import mahjong.redis.RedisService;
 import mahjong.utils.ByteUtils;
 import mahjong.utils.CoreStringUtils;
+import mahjong.utils.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -199,142 +202,151 @@ public class MahjongClient implements Runnable {
                                 break;
                             }
                             GameBase.RoomCardIntoRequest intoRequest = GameBase.RoomCardIntoRequest.parseFrom(request.getData());
-                            User user = new User(intoRequest.getID(), "测试帐号");
-                            userId = user.getId();
-                            roomNo = intoRequest.getRoomNo();
-                            MahjongTcpService.userClients.put(userId, this);
-
                             GameBase.RoomCardIntoResponse.Builder roomCardIntoResponseBuilder = GameBase.RoomCardIntoResponse.newBuilder();
                             roomCardIntoResponseBuilder.setGameType(GameBase.GameType.MAHJONG_XINGNING);
-                            Mahjong.MahjongIntoResponse.Builder intoResponseBuilder = Mahjong.MahjongIntoResponse.newBuilder();
-                            if (redisService.exists("room" + roomNo)) {
-                                while (!redisService.lock("lock_room" + roomNo)) {
-                                }
 
-                                redisService.addCache("reconnect" + userId, "xingning_mahjong," + roomNo);
-
-                                Room room = JSON.parseObject(redisService.getCache("room" + roomNo), Room.class);
-                                //房间是否已存在当前用户，存在则为重连
-                                final boolean[] find = {false};
-                                room.getSeats().stream().filter(seat -> seat.getUserId() == userId).forEach(seat -> find[0] = true);
-                                if (!find[0]) {
-                                    if (room.getCount() > room.getSeats().size()) {
-                                        room.addSeat(user);
-                                    } else {
-                                        roomCardIntoResponseBuilder.setError(GameBase.ErrorCode.COUNT_FULL);
-                                        response.setOperationType(GameBase.OperationType.CONNECTION).setData(roomCardIntoResponseBuilder.build().toByteString());
-                                        send(response.build(), userId);
-                                        redisService.unlock("lock_room" + roomNo);
-                                        break;
+                            userId = intoRequest.getID();
+                            JSONObject jsonObject = new JSONObject();
+                            jsonObject.put("userId", userId);
+                            ApiResponse<User> userResponse = JSON.parseObject(HttpUtil.urlConnectionByRsa("http://127.0.0.1:9999/api/user/info", jsonObject.toJSONString()), new TypeReference<ApiResponse<User>>() {
+                            });
+                            if ("SUCCESS".equals(userResponse.getCode())) {
+                                roomNo = intoRequest.getRoomNo();
+                                MahjongTcpService.userClients.put(userId, this);
+                                Mahjong.MahjongIntoResponse.Builder intoResponseBuilder = Mahjong.MahjongIntoResponse.newBuilder();
+                                if (redisService.exists("room" + roomNo)) {
+                                    while (!redisService.lock("lock_room" + roomNo)) {
                                     }
-                                }
-                                intoResponseBuilder.setRoomNo(roomNo);
-                                intoResponseBuilder.setBaseScore(room.getBaseScore());
-                                intoResponseBuilder.setCount(room.getCount());
-                                intoResponseBuilder.setGameTimes(room.getGameTimes());
-                                roomCardIntoResponseBuilder.setError(GameBase.ErrorCode.SUCCESS);
-                                roomCardIntoResponseBuilder.setData(intoResponseBuilder.build().toByteString());
-                                response.setOperationType(GameBase.OperationType.ROOM_INFO).setData(roomCardIntoResponseBuilder.build().toByteString());
-                                send(response.build(), userId);
 
-                                GameBase.RoomSeatsInfo.Builder roomSeatsInfo = GameBase.RoomSeatsInfo.newBuilder();
-                                for (Seat seat1 : room.getSeats()) {
-                                    seat1.setRobot(false);
-                                    GameBase.SeatResponse.Builder seatResponse = GameBase.SeatResponse.newBuilder();
-                                    seatResponse.setSeatNo(seat1.getSeatNo());
-                                    seatResponse.setID(seat1.getUserId());
-                                    seatResponse.setScore(seat1.getScore());
-                                    seatResponse.setIsReady(seat1.isReady());
-                                    seatResponse.setAreaString(seat1.getAreaString());
-                                    roomSeatsInfo.addSeats(seatResponse.build());
-                                }
-                                response.setOperationType(GameBase.OperationType.SEAT_INFO).setData(roomSeatsInfo.build().toByteString());
-                                for (Seat seat : room.getSeats()) {
-                                    if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
-                                        MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
-                                    }
-                                }
-                                if (0 != room.getGameStatus().compareTo(GameStatus.WAITING)) {
-                                    Mahjong.MahjongGameInfo.Builder gameInfo = Mahjong.MahjongGameInfo.newBuilder().setGameStatus(GameBase.GameStatus.PLAYING);
-                                    Seat operationSeat = null;
-                                    for (Seat seat : room.getSeats()) {
-                                        if (seat.getSeatNo() == room.getOperationSeatNo()) {
-                                            operationSeat = seat;
+                                    redisService.addCache("reconnect" + userId, "xingning_mahjong," + roomNo);
+
+                                    Room room = JSON.parseObject(redisService.getCache("room" + roomNo), Room.class);
+                                    //房间是否已存在当前用户，存在则为重连
+                                    final boolean[] find = {false};
+                                    room.getSeats().stream().filter(seat -> seat.getUserId() == userId).forEach(seat -> find[0] = true);
+                                    if (!find[0]) {
+                                        if (room.getCount() > room.getSeats().size()) {
+                                            room.addSeat(userResponse.getData());
+                                        } else {
+                                            roomCardIntoResponseBuilder.setError(GameBase.ErrorCode.COUNT_FULL);
+                                            response.setOperationType(GameBase.OperationType.CONNECTION).setData(roomCardIntoResponseBuilder.build().toByteString());
+                                            send(response.build(), userId);
+                                            redisService.unlock("lock_room" + roomNo);
                                             break;
                                         }
                                     }
-                                    gameInfo.setOperationUser(operationSeat.getUserId());
-                                    gameInfo.setLastOperationUser(room.getLastOperation());
-                                    for (Seat seat1 : room.getSeats()) {
-                                        Mahjong.MahjongSeatGameInfo.Builder seatResponse = Mahjong.MahjongSeatGameInfo.newBuilder();
-                                        seatResponse.setID(seat1.getUserId());
-                                        seatResponse.setIsRobot(seat1.isRobot());
-                                        if (null != seat1.getInitialCards()) {
-                                            if (seat1.getUserId() == userId) {
-                                                seatResponse.addAllInitialCards(seat1.getInitialCards());
-                                            }
-                                        }
-                                        if (null != seat1.getCards()) {
-                                            if (seat1.getUserId() == userId) {
-                                                seatResponse.addAllCards(seat1.getCards());
-                                            } else {
-                                                seatResponse.setCardsSize(seat1.getCards().size());
-                                            }
-                                        }
-
-                                        if (null != seat1.getPengCards()) {
-                                            seatResponse.addAllPengCards(seat1.getPengCards());
-                                        }
-                                        if (null != seat1.getGangCards()) {
-                                            seatResponse.addAllGangCards(seat1.getGangCards());
-                                        }
-                                        if (null != seat1.getChiCards()) {
-                                            seatResponse.addAllChiCards(seat1.getChiCards());
-                                        }
-
-                                        if (null != seat1.getPlayedCards()) {
-                                            seatResponse.addAllPlayedCards(seat1.getPlayedCards());
-                                        }
-                                        gameInfo.addSeats(seatResponse.build());
-                                    }
-                                    response.setOperationType(GameBase.OperationType.GAME_INFO).setData(gameInfo.build().toByteString());
+                                    intoResponseBuilder.setRoomNo(roomNo);
+                                    intoResponseBuilder.setBaseScore(room.getBaseScore());
+                                    intoResponseBuilder.setCount(room.getCount());
+                                    intoResponseBuilder.setGameTimes(room.getGameTimes());
+                                    roomCardIntoResponseBuilder.setError(GameBase.ErrorCode.SUCCESS);
+                                    roomCardIntoResponseBuilder.setData(intoResponseBuilder.build().toByteString());
+                                    response.setOperationType(GameBase.OperationType.ROOM_INFO).setData(roomCardIntoResponseBuilder.build().toByteString());
                                     send(response.build(), userId);
 
+                                    GameBase.RoomSeatsInfo.Builder roomSeatsInfo = GameBase.RoomSeatsInfo.newBuilder();
+                                    for (Seat seat1 : room.getSeats()) {
+                                        seat1.setRobot(false);
+                                        GameBase.SeatResponse.Builder seatResponse = GameBase.SeatResponse.newBuilder();
+                                        seatResponse.setSeatNo(seat1.getSeatNo());
+                                        seatResponse.setID(seat1.getUserId());
+                                        seatResponse.setScore(seat1.getScore());
+                                        seatResponse.setIsReady(seat1.isReady());
+                                        seatResponse.setAreaString(seat1.getAreaString());
+                                        roomSeatsInfo.addSeats(seatResponse.build());
+                                    }
+                                    response.setOperationType(GameBase.OperationType.SEAT_INFO).setData(roomSeatsInfo.build().toByteString());
                                     for (Seat seat : room.getSeats()) {
-                                        if (seat.getSeatNo() == room.getOperationSeatNo()) {
-                                            GameBase.RoundResponse roundResponse = GameBase.RoundResponse.newBuilder().setID(seat.getUserId()).build();
-                                            response.setOperationType(GameBase.OperationType.ROUND).setData(roundResponse.toByteString());
-                                            send(response.build(), userId);
-                                            break;
+                                        if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
+                                            MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
                                         }
                                     }
+                                    if (0 != room.getGameStatus().compareTo(GameStatus.WAITING)) {
+                                        Mahjong.MahjongGameInfo.Builder gameInfo = Mahjong.MahjongGameInfo.newBuilder().setGameStatus(GameBase.GameStatus.PLAYING);
+                                        Seat operationSeat = null;
+                                        for (Seat seat : room.getSeats()) {
+                                            if (seat.getSeatNo() == room.getOperationSeatNo()) {
+                                                operationSeat = seat;
+                                                break;
+                                            }
+                                        }
+                                        gameInfo.setOperationUser(operationSeat.getUserId());
+                                        gameInfo.setLastOperationUser(room.getLastOperation());
+                                        for (Seat seat1 : room.getSeats()) {
+                                            Mahjong.MahjongSeatGameInfo.Builder seatResponse = Mahjong.MahjongSeatGameInfo.newBuilder();
+                                            seatResponse.setID(seat1.getUserId());
+                                            seatResponse.setIsRobot(seat1.isRobot());
+                                            if (null != seat1.getInitialCards()) {
+                                                if (seat1.getUserId() == userId) {
+                                                    seatResponse.addAllInitialCards(seat1.getInitialCards());
+                                                }
+                                            }
+                                            if (null != seat1.getCards()) {
+                                                if (seat1.getUserId() == userId) {
+                                                    seatResponse.addAllCards(seat1.getCards());
+                                                } else {
+                                                    seatResponse.setCardsSize(seat1.getCards().size());
+                                                }
+                                            }
 
-                                    //才开始的时候检测是否该当前玩家出牌
-                                    if (0 == room.getHistoryList().size()) {
-                                        room.checkSelfGetCard(response, operationSeat);
-                                    } else if (room.getHistoryList().size() > 0) {
-                                        OperationHistory operationHistory = room.getHistoryList().get(room.getHistoryList().size() - 1);
-                                        switch (operationHistory.getHistoryType()) {
-                                            case GET_CARD:
-                                                if (operationHistory.getUserId() == userId) {
-                                                    for (Seat seat : room.getSeats()) {
-                                                        if (seat.getSeatNo() == userId) {
-                                                            room.checkSelfGetCard(response, seat);
-                                                            break;
+                                            if (null != seat1.getPengCards()) {
+                                                seatResponse.addAllPengCards(seat1.getPengCards());
+                                            }
+                                            if (null != seat1.getGangCards()) {
+                                                seatResponse.addAllGangCards(seat1.getGangCards());
+                                            }
+                                            if (null != seat1.getChiCards()) {
+                                                seatResponse.addAllChiCards(seat1.getChiCards());
+                                            }
+
+                                            if (null != seat1.getPlayedCards()) {
+                                                seatResponse.addAllPlayedCards(seat1.getPlayedCards());
+                                            }
+                                            gameInfo.addSeats(seatResponse.build());
+                                        }
+                                        response.setOperationType(GameBase.OperationType.GAME_INFO).setData(gameInfo.build().toByteString());
+                                        send(response.build(), userId);
+
+                                        for (Seat seat : room.getSeats()) {
+                                            if (seat.getSeatNo() == room.getOperationSeatNo()) {
+                                                GameBase.RoundResponse roundResponse = GameBase.RoundResponse.newBuilder().setID(seat.getUserId()).build();
+                                                response.setOperationType(GameBase.OperationType.ROUND).setData(roundResponse.toByteString());
+                                                send(response.build(), userId);
+                                                break;
+                                            }
+                                        }
+
+                                        //才开始的时候检测是否该当前玩家出牌
+                                        if (0 == room.getHistoryList().size()) {
+                                            room.checkSelfGetCard(response, operationSeat);
+                                        } else if (room.getHistoryList().size() > 0) {
+                                            OperationHistory operationHistory = room.getHistoryList().get(room.getHistoryList().size() - 1);
+                                            switch (operationHistory.getHistoryType()) {
+                                                case GET_CARD:
+                                                    if (operationHistory.getUserId() == userId) {
+                                                        for (Seat seat : room.getSeats()) {
+                                                            if (seat.getUserId() == userId) {
+                                                                room.checkSelfGetCard(response, seat);
+                                                                break;
+                                                            }
                                                         }
                                                     }
-                                                }
-                                                break;
-                                            case PLAY_CARD:
-                                                if (operationHistory.getUserId() != userId) {
-                                                    room.checkSeatCan(operationHistory.getCard(), response, userId);
-                                                }
-                                                break;
+                                                    break;
+                                                case PLAY_CARD:
+                                                    if (operationHistory.getUserId() != userId) {
+                                                        room.checkSeatCan(operationHistory.getCard(), response, userId);
+                                                    }
+                                                    break;
+                                            }
                                         }
                                     }
+                                    redisService.addCache("room" + roomNo, JSON.toJSONString(room));
+                                    redisService.unlock("lock_room" + roomNo);
+                                } else {
+                                    roomCardIntoResponseBuilder.setError(GameBase.ErrorCode.ROOM_NOT_EXIST);
+                                    response.setOperationType(GameBase.OperationType.CONNECTION).setData(roomCardIntoResponseBuilder.build().toByteString());
+                                    send(response.build(), userId);
                                 }
-                                redisService.addCache("room" + roomNo, JSON.toJSONString(room));
-                                redisService.unlock("lock_room" + roomNo);
                             } else {
                                 roomCardIntoResponseBuilder.setError(GameBase.ErrorCode.ROOM_NOT_EXIST);
                                 response.setOperationType(GameBase.OperationType.CONNECTION).setData(roomCardIntoResponseBuilder.build().toByteString());

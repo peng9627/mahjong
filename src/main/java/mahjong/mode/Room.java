@@ -178,7 +178,7 @@ public class Room {
         seat.setScore(0);
         seat.setSeatNo(seatNos.get(0));
         seatNos.remove(0);
-        seat.setUserId(user.getId());
+        seat.setUserId(user.getUserId());
         seats.add(seat);
     }
 
@@ -189,21 +189,66 @@ public class Room {
             if (seat.getMaCount() == 0) {
                 seat.setMaCount(initMaCount);
             }
+
+            List<Integer> cardList = new ArrayList<>();
+
+            if (banker == seat.getUserId()) {
+                int cardIndex = 30;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 28;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 26;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 24;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 22;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 20;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 18;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 16;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 14;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 12;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 10;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 8;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 6;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+            } else {
+                for (int i = 0; i < 13; i++) {
+                    int cardIndex = (int) (Math.random() * surplusCards.size());
+                    cardList.add(surplusCards.get(cardIndex));
+                    surplusCards.remove(cardIndex);
+                }
+            }
+
+            seat.setCards(cardList);
+            seat.setInitialCards(cardList);
+
             if (seat.getUserId() == banker) {
                 operationSeatNo = seat.getSeatNo();
                 int cardIndex = (int) (Math.random() * surplusCards.size());
                 seat.getCards().add(surplusCards.get(cardIndex));
                 surplusCards.remove(cardIndex);
             }
-
-            List<Integer> cardList = new ArrayList<>();
-            for (int i = 0; i < 13; i++) {
-                int cardIndex = (int) (Math.random() * surplusCards.size());
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-            }
-            seat.setCards(cardList);
-            seat.setInitialCards(cardList);
 
             List<Integer> maList = new ArrayList<>();
             for (int i = 0; i < seat.getMaCount(); i++) {

@@ -25,7 +25,7 @@ public class HttpUtil {
             pa = RSAUtils.encrypt(publicKey, pa);
             System.out.println(pa);
             if (pa != null) {
-                return new String(RSAUtils.decrypt(publicKey, urlConnection(url, "content=" + URLEncoder.encode(pa, "utf-8"), "utf-8")), "utf-8");
+                return new String(RSAUtils.decrypt(publicKey, urlConnection(url, URLEncoder.encode(pa, "utf-8"), "utf-8")), "utf-8");
             }
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
