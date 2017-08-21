@@ -262,6 +262,16 @@ public class MahjongClient implements Runnable {
                                         }
                                     }
                                     if (0 != room.getGameStatus().compareTo(GameStatus.WAITING)) {
+
+                                        for (Seat seat : room.getSeats()) {
+                                            if (seat.getSeatNo() == room.getOperationSeatNo()) {
+                                                GameBase.RoundResponse roundResponse = GameBase.RoundResponse.newBuilder().setID(seat.getUserId()).build();
+                                                response.setOperationType(GameBase.OperationType.ROUND).setData(roundResponse.toByteString());
+                                                send(response.build(), userId);
+                                                break;
+                                            }
+                                        }
+
                                         Mahjong.MahjongGameInfo.Builder gameInfo = Mahjong.MahjongGameInfo.newBuilder().setGameStatus(GameBase.GameStatus.PLAYING);
                                         Seat operationSeat = null;
                                         for (Seat seat : room.getSeats()) {
@@ -306,15 +316,6 @@ public class MahjongClient implements Runnable {
                                         }
                                         response.setOperationType(GameBase.OperationType.GAME_INFO).setData(gameInfo.build().toByteString());
                                         send(response.build(), userId);
-
-                                        for (Seat seat : room.getSeats()) {
-                                            if (seat.getSeatNo() == room.getOperationSeatNo()) {
-                                                GameBase.RoundResponse roundResponse = GameBase.RoundResponse.newBuilder().setID(seat.getUserId()).build();
-                                                response.setOperationType(GameBase.OperationType.ROUND).setData(roundResponse.toByteString());
-                                                send(response.build(), userId);
-                                                break;
-                                            }
-                                        }
 
                                         //才开始的时候检测是否该当前玩家出牌
                                         if (0 == room.getHistoryList().size()) {

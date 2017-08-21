@@ -1,8 +1,12 @@
 package mahjong.mode;
 
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import mahjong.entrance.MahjongTcpService;
 import mahjong.redis.RedisService;
+import mahjong.utils.HttpUtil;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -32,6 +36,8 @@ public class Room {
     private int gameCount;
 
     private int initMaCount;
+
+    private int roomOwner;
 
     public int getBaseScore() {
         return baseScore;
@@ -167,6 +173,14 @@ public class Room {
 
     public void setInitMaCount(int initMaCount) {
         this.initMaCount = initMaCount;
+    }
+
+    public int getRoomOwner() {
+        return roomOwner;
+    }
+
+    public void setRoomOwner(int roomOwner) {
+        this.roomOwner = roomOwner;
     }
 
     public void addSeat(User user) {
@@ -456,7 +470,10 @@ public class Room {
             over.addGameOver(seatGameOver);
         }
 
+        StringBuilder people = new StringBuilder();
+
         for (Seat seat : seats) {
+            people.append(",").append(seat.getUserId());
             redisService.delete("reconnect" + seat.getUserId());
             if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
                 String uuid = UUID.randomUUID().toString().replace("-", "");
@@ -468,6 +485,21 @@ public class Room {
                 response.setOperationType(GameBase.OperationType.OVER).setData(over.build().toByteString());
                 MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
             }
+        }
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("gameType", "XINGNING_MAHJONG");
+        jsonObject.put("roomOwner", roomOwner);
+        jsonObject.put("people", people.toString().substring(1));
+        jsonObject.put("gameTotal", gameTimes);
+        jsonObject.put("gameCount", gameCount);
+        jsonObject.put("peopleCount", count);
+        jsonObject.put("roomNo", Integer.parseInt(roomNo));
+        jsonObject.put("gameData", JSON.toJSONString(recordList).getBytes());
+
+        ApiResponse apiResponse = JSON.parseObject(HttpUtil.urlConnectionByRsa("http://127.0.0.1:9999/api/gamerecord/create", jsonObject.toJSONString()), ApiResponse.class);
+        if (!"SUCCESS".equals(apiResponse.getCode())) {
+            LoggerFactory.getLogger(this.getClass()).error("http://127.0.0.1:9999/api/gamerecord/create?" + jsonObject.toJSONString());
         }
 
         //删除该桌
@@ -857,13 +889,14 @@ public class Room {
                     seat.setMinggang(seat.getMinggang() + 1);
                     historyList.add(new OperationHistory(userId, OperationHistoryType.DIAN_GANG, card[0]));
 
+                    operationSeat.getPlayedCards().remove(operationSeat.getPlayedCards().size() - 1);
+
                     actionResponse.setOperationId(GameBase.ActionId.DIAN_GANG).setData(Mahjong.MahjongGang.newBuilder()
                             .setCard(card[0]).build().toByteString());
                     response.setOperationType(GameBase.OperationType.ACTION).setData(actionResponse.build().toByteString());
                     seats.stream().filter(seat1 -> MahjongTcpService.userClients.containsKey(seat1.getUserId()))
                             .forEach(seat1 -> MahjongTcpService.userClients.get(seat1.getUserId()).send(response.build(), seat1.getUserId()));
 
-                    operationSeat.getPlayedCards().remove(seat.getPlayedCards().size() - 1);
                     //点杠后需要摸牌
                     getCard(response, seat.getSeatNo(), redisService);
                     return;
@@ -873,6 +906,8 @@ public class Room {
                     seat.getPengCards().add(card[0]);
                     operationSeatNo = seat.getSeatNo();
                     historyList.add(new OperationHistory(userId, OperationHistoryType.PENG, card[0]));
+
+                    operationSeat.getPlayedCards().remove(operationSeat.getPlayedCards().size() - 1);
 
                     actionResponse.setOperationId(GameBase.ActionId.PENG).setData(Mahjong.MahjongPengResponse.newBuilder().setCard(card[0]).build().toByteString());
                     response.setOperationType(GameBase.OperationType.ACTION).setData(actionResponse.build().toByteString());
