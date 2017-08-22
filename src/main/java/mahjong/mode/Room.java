@@ -30,7 +30,8 @@ public class Room {
     private int banker;//庄家
     private int gameTimes; //游戏局数
     private int count;//人数
-    private boolean dianpao;//点炮
+    private int ghost;//1.红中做鬼，2.无鬼，3.翻鬼，4.无鬼加倍
+    private int gameRules;////游戏规则  高位到低位顺序（鸡胡，门清，天地和，幺九，全番，十三幺，对对胡，十八罗汉，七小对，清一色，混一色，海底捞，杠爆全包，庄硬）
     private Integer[] dice;//骰子
     private List<Record> recordList = new ArrayList<>();//战绩
     private int gameCount;
@@ -135,12 +136,20 @@ public class Room {
         this.count = count;
     }
 
-    public boolean isDianpao() {
-        return dianpao;
+    public int getGhost() {
+        return ghost;
     }
 
-    public void setDianpao(boolean dianpao) {
-        this.dianpao = dianpao;
+    public void setGhost(int ghost) {
+        this.ghost = ghost;
+    }
+
+    public int getGameRules() {
+        return gameRules;
+    }
+
+    public void setGameRules(int gameRules) {
+        this.gameRules = gameRules;
     }
 
     public Integer[] getDice() {
@@ -531,7 +540,7 @@ public class Room {
     public void checkSelfGetCard(GameBase.BaseConnection.Builder response, Seat seat) {
         System.out.println("摸牌后检测是否可以自摸、暗杠、扒杠");
         GameBase.AskResponse.Builder builder = GameBase.AskResponse.newBuilder();
-        if (MahjongUtil.checkHu(seat.getCards())) {
+        if (MahjongUtil.checkHu(seat.getCards(), gameRules)) {
             builder.addOperationId(GameBase.ActionId.HU);
         }
         //暗杠
@@ -569,16 +578,16 @@ public class Room {
         seats.stream().filter(seat -> seat.getUserId() == userId)
                 .forEach(seat -> huSeat[0] = seat);
         //检查是自摸还是点炮,自摸输家是其它三家
-        if (MahjongUtil.checkHu(huSeat[0].getCards())) {
+        if (MahjongUtil.checkHu(huSeat[0].getCards(), gameRules)) {
 
-            List<ScoreType> scoreTypes = MahjongUtil.getHuType(huSeat[0].getCards(), huSeat[0].getPengCards(), huSeat[0].getGangCards());
+            List<ScoreType> scoreTypes = MahjongUtil.getHuType(huSeat[0].getCards(), huSeat[0].getPengCards(), huSeat[0].getGangCards(), gameRules);
             int score = MahjongUtil.getScore(scoreTypes);
 
             //天胡
-            if (historyList.size() == 0 && score < 20) {
+            if (historyList.size() == 0 && score < 10) {
                 scoreTypes.clear();
                 scoreTypes.add(ScoreType.TIAN_HU);
-                score = 20;
+                score = 10;
             } else {
                 scoreTypes.add(ScoreType.ZIMO_HU);
                 score += 2;
@@ -617,15 +626,15 @@ public class Room {
 
             //当前玩家是否可以胡牌
             temp.add(card[0]);
-            if (MahjongUtil.checkHu(temp) && seat.getOperation() == 1) {
+            if (MahjongUtil.checkHu(temp, gameRules) && seat.getOperation() == 1) {
 
-                List<ScoreType> scoreTypes = MahjongUtil.getHuType(huSeat[0].getCards(), huSeat[0].getPengCards(), huSeat[0].getGangCards());
+                List<ScoreType> scoreTypes = MahjongUtil.getHuType(huSeat[0].getCards(), huSeat[0].getPengCards(), huSeat[0].getGangCards(), gameRules);
                 int score = MahjongUtil.getScore(scoreTypes);
                 //地胡
-                if (historyList.size() == 1 && score < 20) {
+                if (historyList.size() == 1 && score < 8) {
                     scoreTypes.clear();
                     scoreTypes.add(ScoreType.DI_HU);
-                    score = 20;
+                    score = 8;
                 }
 
                 finalOperationSeat.setCardResult(new GameResult(scoreTypes, card[0], -score));
@@ -736,7 +745,7 @@ public class Room {
             }
             //当前玩家是否可以胡牌
             temp.add(card);
-            if (MahjongUtil.checkHu(temp)) {
+            if (MahjongUtil.checkHu(temp, gameRules)) {
                 builder.addOperationId(GameBase.ActionId.HU);
             }
             if (0 != builder.getOperationIdCount()) {
@@ -779,7 +788,7 @@ public class Room {
             }
             //当前玩家是否可以胡牌
             temp.add(card);
-            if (MahjongUtil.checkHu(temp)) {
+            if (MahjongUtil.checkHu(temp, gameRules)) {
                 builder.addOperationId(GameBase.ActionId.HU);
             }
             if (0 != builder.getOperationIdCount()) {
@@ -809,7 +818,7 @@ public class Room {
 
             //当前玩家是否可以胡牌
             temp.add(card[0]);
-            if (MahjongUtil.checkHu(temp) && seat.getOperation() == 0) {
+            if (MahjongUtil.checkHu(temp, gameRules) && seat.getOperation() == 0) {
                 hu[0] = true;
             }
         });
@@ -832,7 +841,7 @@ public class Room {
 
             //当前玩家是否可以胡牌
             temp.add(card[0]);
-            if (MahjongUtil.checkHu(temp) && seat.getOperation() != 4) {
+            if (MahjongUtil.checkHu(temp, gameRules) && seat.getOperation() != 4) {
                 hasNoOperation[0] = true;
             }
 

@@ -106,7 +106,7 @@ public class Card {
      * @return
      */
     public static boolean isQF(List<Integer> cardList) {
-        List<Integer> cards = Arrays.asList(41, 43, 45, 47);
+        List<Integer> cards = Arrays.asList(31, 33, 35, 41, 43, 45, 47);
         return containAll(cardList, cards) && containAll(cards, cardList);
     }
 

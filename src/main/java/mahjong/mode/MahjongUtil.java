@@ -120,7 +120,7 @@ public class MahjongUtil {
      * @param userCards
      * @return
      */
-    public static List<Integer> ting(List<Integer> userCards) {
+    public static List<Integer> ting(List<Integer> userCards, int gameRules) {
         List<Integer> ting_arr = new ArrayList<>();
         List<Integer> temp = new ArrayList<>();
         List<Integer> allCard = Card.getAllCard();
@@ -128,7 +128,7 @@ public class MahjongUtil {
             temp.clear();
             temp.addAll(userCards);
             temp.add(card);
-            if (checkHu(temp)) {
+            if (checkHu(temp, gameRules)) {
                 ting_arr.add(card);
             }
         }
@@ -166,7 +166,7 @@ public class MahjongUtil {
      * @param gangCard  杠的牌
      * @return
      */
-    public static List<ScoreType> getHuType(List<Integer> cards, List<Integer> pengCards, List<Integer> gangCard) {
+    public static List<ScoreType> getHuType(List<Integer> cards, List<Integer> pengCards, List<Integer> gangCard, int gameRules) {
         List<ScoreType> scoreTypes = new ArrayList<>();
 
         cards.sort(new Comparator<Integer>() {
@@ -176,14 +176,17 @@ public class MahjongUtil {
             }
         });
         //门清
-        if (14 == cards.size()) {
+        if (14 == cards.size() && 1 == (gameRules >> 1) % 2) {
             scoreTypes.add(ScoreType.MENQING_HU);
+        }
+        if (4 == gangCard.size() && 1 == (gameRules >> 7) % 2) {
+            scoreTypes.add(ScoreType.SHIBALUOHAN);
         }
         List<Integer> cardList = new ArrayList<>();
         cardList.addAll(cards);
 
         //碰碰胡
-        if (get_san(cardList).size() + 2 == cards.size()) {
+        if (get_san(cardList).size() + 2 == cards.size() && 1 == (gameRules >> 6) % 2) {
             scoreTypes.add(ScoreType.PENGPENG_HU);
         }
 
@@ -195,15 +198,15 @@ public class MahjongUtil {
         //清一色，混一色
         if ((!Card.hasSameColor(allCard, 0) && !Card.hasSameColor(allCard, 1)) || (!Card.hasSameColor(allCard, 0) && !Card.hasSameColor(allCard, 2))
                 || (!Card.hasSameColor(allCard, 1) && !Card.hasSameColor(allCard, 2))) {
-            if (!Card.hasSameColor(allCard, 3) && !Card.hasSameColor(allCard, 4)) {
+            if (!Card.hasSameColor(allCard, 3) && !Card.hasSameColor(allCard, 4) && 1 == (gameRules >> 9) % 2) {
                 scoreTypes.add(ScoreType.QINGYISE_HU);
-            } else {
+            } else if (1 == (gameRules >> 10) % 2) {
                 scoreTypes.add(ScoreType.HUNYISE_HU);
             }
         }
 
         //七对
-        if (get_dui(cardList).size() == 14) {
+        if (get_dui(cardList).size() == 14 && 1 == (gameRules >> 8) % 2) {
             List<Integer> si = get_si(cardList);
             switch (si.size() / 4) {
                 case 0:
@@ -222,7 +225,7 @@ public class MahjongUtil {
         }
 
         //幺九
-        if (Card.isYJ(allCard)) {
+        if (Card.isYJ(allCard) && 1 == (gameRules >> 3) % 2) {
             if (!Card.hasSameColor(allCard, 3) && !Card.hasSameColor(allCard, 4)) {
                 scoreTypes.add(ScoreType.QUANYAOJIU_HU);
             } else {
@@ -231,19 +234,15 @@ public class MahjongUtil {
         }
 
         //十三幺
-        if (Card.isSSY(cardList)) {
+        if (Card.isSSY(cardList) && 1 == (gameRules >> 5) % 2) {
             scoreTypes.add(ScoreType.SHISANYAO_HU);
         }
 
         //全风
-        if (Card.isQF(allCard)) {
-            scoreTypes.add(ScoreType.QUANFENG_HU);
+        if (Card.isQF(allCard) && 1 == (gameRules >> 4) % 2) {
+            scoreTypes.add(ScoreType.QUANFAN_HU);
         }
 
-        //无红中
-        if (!allCard.contains(31)) {
-            scoreTypes.add(ScoreType.WUHONGZHONG_HU);
-        }
         return scoreTypes;
     }
 
@@ -257,35 +256,36 @@ public class MahjongUtil {
         int score = 1;
         for (ScoreType scoreType : scoreTypes) {
             switch (scoreType) {
-                case MENQING_HU:
-                    score += 2;
-                    break;
-                case PENGPENG_HU:
                 case HUNYISE_HU:
+                case MENQING_HU:
+                case PENGPENG_HU:
                     score += 4;
                     break;
-                case QINGYISE_HU:
                 case QIXIAODUI_HU:
+                    score += 6;
+                    break;
+                case QINGYISE_HU:
+                case HUNYAOJIU_HU:
                     score += 8;
                     break;
-                case HUNYAOJIU_HU:
-                    score += 10;
-                    break;
                 case HAOHUAQIXIAODUI_HU:
-                    score += 14;
+                    score += 12;
                     break;
                 case QUANYAOJIU_HU:
-                case QUANFENG_HU:
-                    score += 20;
+                    score += 16;
                     break;
                 case SHUANGHAOHUAQIXIAODUI_HU:
-                    score += 28;
+                    score += 18;
+                    break;
+                case SHISANYAO_HU:
+                case QUANFAN_HU:
+                    score += 20;
                     break;
                 case SANHAOHUAQIXIAODUI_HU:
-                    score += 42;
+                    score += 24;
                     break;
-                case WUHONGZHONG_HU:
-                    score += 1;
+                case SHIBALUOHAN:
+                    score += 36;
                     break;
             }
         }
@@ -355,8 +355,7 @@ public class MahjongUtil {
      * @param cardList
      * @return
      */
-    public static boolean checkHu(List<Integer> cardList) {
-        long time = System.currentTimeMillis();
+    public static boolean checkHu(List<Integer> cardList, int gameRules) {
         List<Integer> handVals = new ArrayList<>();
         handVals.addAll(cardList);
         handVals.sort(new Comparator<Integer>() {
@@ -366,10 +365,14 @@ public class MahjongUtil {
             }
         });
 
-        //检查七对
         List<Integer> pairs = get_dui(handVals);
-        if (pairs.size() == 14) {
-            return true;
+
+        //鸡胡没有七对
+        if (1 == gameRules % 2) {
+            //检查七对
+            if (pairs.size() == 14) {
+                return true;
+            }
         }
 
         //检测十三幺
@@ -386,7 +389,6 @@ public class MahjongUtil {
                 return true;
             }
         }
-        System.out.println(System.currentTimeMillis() - time);
         return false;
     }
 
