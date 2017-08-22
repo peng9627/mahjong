@@ -23,7 +23,7 @@ import java.util.concurrent.Executors;
  */
 public class MahjongTcpService implements Runnable {
 
-    public static Map<Integer, MahjongClient> userClients = new HashMap<>();
+    public static Map<Integer, MessageReceive> userClients = new HashMap<>();
     private ServerSocket serverSocket;
     private boolean started = false;
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -57,7 +57,7 @@ public class MahjongTcpService implements Runnable {
         try {
             while (started) {
                 Socket s = serverSocket.accept();
-                cachedThreadPool.execute(new MahjongClient(s, redisService));
+                cachedThreadPool.execute(new MessageReceive(s, redisService));
             }
         } catch (IOException e) {
             logger.error("socket.server.dirty.shutdown.message");
