@@ -465,8 +465,11 @@ public class MahjongClient {
             if (null != seat1.getPengCards()) {
                 seatResponse.addAllPengCards(seat1.getPengCards());
             }
-            if (null != seat1.getGangCards()) {
-                seatResponse.addAllGangCards(seat1.getGangCards());
+            if (null != seat1.getAnGangCards()) {
+                seatResponse.addAllAnGangCards(seat1.getAnGangCards());
+            }
+            if (null != seat1.getMingGangCards()) {
+                seatResponse.addAllMingGangCards(seat1.getMingGangCards());
             }
             if (null != seat1.getChiCards()) {
                 seatResponse.addAllChiCards(seat1.getChiCards());

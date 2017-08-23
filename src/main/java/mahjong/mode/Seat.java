@@ -13,10 +13,11 @@ public class Seat {
     private int userId;                         //用户名
     private String nickname;                    //昵称
     private String head;                        //头像
-    private List<Integer> initialCards = new ArrayList<>();         //初始牌
+    private List<Integer> initialCards = new ArrayList<>();          //初始牌
     private List<Integer> cards = new ArrayList<>();                 //牌
     private List<Integer> pengCards = new ArrayList<>();             //碰牌
-    private List<Integer> gangCards = new ArrayList<>();             //杠的牌
+    private List<Integer> anGangCards = new ArrayList<>();           //杠的牌
+    private List<Integer> mingGangCards = new ArrayList<>();         //杠的牌
     private List<Integer> chiCards = new ArrayList<>();              //吃的牌
     private List<Integer> playedCards = new ArrayList<>();           //出牌
     private int score;                          //输赢分数
@@ -93,12 +94,20 @@ public class Seat {
         this.pengCards = pengCards;
     }
 
-    public List<Integer> getGangCards() {
-        return gangCards;
+    public List<Integer> getAnGangCards() {
+        return anGangCards;
     }
 
-    public void setGangCards(List<Integer> gangCards) {
-        this.gangCards = gangCards;
+    public void setAnGangCards(List<Integer> anGangCards) {
+        this.anGangCards = anGangCards;
+    }
+
+    public List<Integer> getMingGangCards() {
+        return mingGangCards;
+    }
+
+    public void setMingGangCards(List<Integer> mingGangCards) {
+        this.mingGangCards = mingGangCards;
     }
 
     public List<Integer> getChiCards() {
@@ -241,7 +250,8 @@ public class Seat {
         initialCards.clear();
         cards.clear();
         pengCards.clear();
-        gangCards.clear();
+        anGangCards.clear();
+        mingGangCards.clear();
         chiCards.clear();
         playedCards.clear();
         ma.clear();

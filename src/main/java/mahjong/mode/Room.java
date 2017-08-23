@@ -395,6 +395,10 @@ public class Room {
             Mahjong.MahjongUserResult.Builder userResult = Mahjong.MahjongUserResult.newBuilder();
             userResult.setID(seat.getUserId());
             userResult.addAllCards(seat.getCards());
+            userResult.addAllChiCards(seat.getChiCards());
+            userResult.addAllPengCards(seat.getPengCards());
+            userResult.addAllAnGangCards(seat.getAnGangCards());
+            userResult.addAllMingGangCards(seat.getMingGangCards());
             final int[] win = {0};
             if (null != seat.getCardResult()) {
                 seatScore.put(seat.getSeatNo(), seat.getCardResult().getScore());
@@ -422,7 +426,6 @@ public class Room {
             userResult.setGangScore(gangScore);
 
             userResult.setWinOrLose(win[0]);
-            userResult.addAllGangCards(gangCard);
             resultResponse.addUserResult(userResult);
 
             seat.setScore(seat.getScore() + win[0]);
@@ -593,7 +596,11 @@ public class Room {
         //检查是自摸还是点炮,自摸输家是其它三家
         if (MahjongUtil.checkHu(huSeat[0].getCards(), gameRules)) {
 
-            List<ScoreType> scoreTypes = MahjongUtil.getHuType(huSeat[0].getCards(), huSeat[0].getPengCards(), huSeat[0].getGangCards(), gameRules);
+            List<Integer> gangCards = new ArrayList<>();
+            gangCards.addAll(huSeat[0].getAnGangCards());
+            gangCards.addAll(huSeat[0].getMingGangCards());
+
+            List<ScoreType> scoreTypes = MahjongUtil.getHuType(huSeat[0].getCards(), huSeat[0].getPengCards(), gangCards, gameRules);
             int score = MahjongUtil.getScore(scoreTypes);
 
             //天胡
@@ -641,7 +648,11 @@ public class Room {
             temp.add(card[0]);
             if (MahjongUtil.checkHu(temp, gameRules) && seat.getOperation() == 1) {
 
-                List<ScoreType> scoreTypes = MahjongUtil.getHuType(huSeat[0].getCards(), huSeat[0].getPengCards(), huSeat[0].getGangCards(), gameRules);
+                List<Integer> gangCards = new ArrayList<>();
+                gangCards.addAll(huSeat[0].getAnGangCards());
+                gangCards.addAll(huSeat[0].getMingGangCards());
+
+                List<ScoreType> scoreTypes = MahjongUtil.getHuType(huSeat[0].getCards(), huSeat[0].getPengCards(), gangCards, gameRules);
                 int score = MahjongUtil.getScore(scoreTypes);
                 //地胡
                 if (historyList.size() == 1 && score < 8) {
@@ -681,7 +692,7 @@ public class Room {
                 Card.remove(seat.getCards(), card);
                 Card.remove(seat.getCards(), card);
 
-                seat.getGangCards().add(card);
+                seat.getAnGangCards().add(card);
 
                 List<ScoreType> scoreTypes = new ArrayList<>();
                 scoreTypes.add(ScoreType.AN_GANG);
@@ -705,7 +716,7 @@ public class Room {
                 Card.remove(seat.getCards(), card);
                 Card.remove(seat.getPengCards(), card);
 
-                seat.getGangCards().add(card);
+                seat.getMingGangCards().add(card);
 
                 List<ScoreType> scoreTypes = new ArrayList<>();
                 scoreTypes.add(ScoreType.BA_GANG);
@@ -901,7 +912,7 @@ public class Room {
                     Card.remove(seat.getCards(), card[0]);
                     Card.remove(seat.getCards(), card[0]);
                     Card.remove(seat.getCards(), card[0]);
-                    seat.getGangCards().add(card[0]);
+                    seat.getMingGangCards().add(card[0]);
 
                     //添加结算
                     List<ScoreType> scoreTypes = new ArrayList<>();
