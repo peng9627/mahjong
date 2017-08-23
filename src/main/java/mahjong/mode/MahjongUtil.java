@@ -259,39 +259,39 @@ public class MahjongUtil {
                 case HUNYISE_HU:
                 case MENQING_HU:
                 case PENGPENG_HU:
-                    score += 4;
+                    score *= 2;
                     break;
                 case QIXIAODUI_HU:
-                    score += 6;
+                    score *= 3;
                     break;
                 case QINGYISE_HU:
                 case HUNYAOJIU_HU:
-                    score += 8;
+                    score *= 4;
                     break;
                 case HAOHUAQIXIAODUI_HU:
-                    score += 12;
+                    score *= 6;
                     break;
                 case QUANYAOJIU_HU:
-                    score += 16;
+                    score *= 8;
                     break;
                 case SHUANGHAOHUAQIXIAODUI_HU:
-                    score += 18;
+                    score *= 9;
                     break;
                 case SHISANYAO_HU:
                 case QUANFAN_HU:
-                    score += 20;
+                    score *= 10;
                     break;
                 case SANHAOHUAQIXIAODUI_HU:
-                    score += 24;
+                    score *= 12;
                     break;
                 case SHIBALUOHAN:
-                    score += 36;
+                    score *= 18;
                     break;
             }
         }
         //十三幺不与其它牌型叠加
-        if (scoreTypes.contains(ScoreType.SHISANYAO_HU) && score < 20) {
-            score = 20;
+        if (scoreTypes.contains(ScoreType.SHISANYAO_HU) && score < 10) {
+            score = 10;
         }
         return score;
     }

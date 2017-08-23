@@ -3,9 +3,19 @@ package mahjong.mode;
 import java.util.List;
 
 public class Record {
+
+    private Integer banker;
     private Integer[] dice;//骰子
     private List<OperationHistory> historyList;
     private List<SeatRecord> seatRecordList;//座位战绩信息
+
+    public Integer getBanker() {
+        return banker;
+    }
+
+    public void setBanker(Integer banker) {
+        this.banker = banker;
+    }
 
     public Integer[] getDice() {
         return dice;

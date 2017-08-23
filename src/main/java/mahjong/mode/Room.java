@@ -196,8 +196,9 @@ public class Room {
         Seat seat = new Seat();
         seat.setRobot(false);
         seat.setReady(false);
-        seat.setAreaString("");
-        seat.setGold(0);
+        seat.setAreaString(user.getArea());
+        seat.setHead(user.getHead());
+        seat.setNickname(user.getNickname());
         seat.setScore(0);
         seat.setSeatNo(seatNos.get(0));
         seatNos.remove(0);
@@ -216,40 +217,40 @@ public class Room {
             List<Integer> cardList = new ArrayList<>();
 
             if (banker == seat.getUserId()) {
-                int cardIndex = 30;
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardIndex = 28;
+                int cardIndex = 27;
                 cardList.add(surplusCards.get(cardIndex));
                 surplusCards.remove(cardIndex);
                 cardIndex = 26;
                 cardList.add(surplusCards.get(cardIndex));
                 surplusCards.remove(cardIndex);
+                cardIndex = 25;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
                 cardIndex = 24;
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardIndex = 22;
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardIndex = 20;
                 cardList.add(surplusCards.get(cardIndex));
                 surplusCards.remove(cardIndex);
                 cardIndex = 18;
                 cardList.add(surplusCards.get(cardIndex));
                 surplusCards.remove(cardIndex);
+                cardIndex = 17;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
                 cardIndex = 16;
                 cardList.add(surplusCards.get(cardIndex));
                 surplusCards.remove(cardIndex);
-                cardIndex = 14;
+                cardIndex = 15;
                 cardList.add(surplusCards.get(cardIndex));
                 surplusCards.remove(cardIndex);
-                cardIndex = 12;
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardIndex = 10;
+                cardIndex = 9;
                 cardList.add(surplusCards.get(cardIndex));
                 surplusCards.remove(cardIndex);
                 cardIndex = 8;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 7;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
+                cardIndex = 6;
                 cardList.add(surplusCards.get(cardIndex));
                 surplusCards.remove(cardIndex);
                 cardIndex = 6;
@@ -296,6 +297,7 @@ public class Room {
     private void clear() {
         Record record = new Record();
         record.setDice(dice);
+        record.setBanker(banker);
         List<SeatRecord> seatRecords = new ArrayList<>();
         seats.forEach(seat -> {
             SeatRecord seatRecord = new SeatRecord();
@@ -309,7 +311,7 @@ public class Room {
             if (null != seat.getCardResult()) {
                 winOrLose[0] += seat.getCardResult().getScore();
             }
-            seatRecord.setWinOrLoce(winOrLose[0]);
+            seatRecord.setWinOrLose(winOrLose[0]);
             seatRecords.add(seatRecord);
         });
         record.setSeatRecordList(seatRecords);
@@ -496,6 +498,16 @@ public class Room {
             }
         }
 
+        List<TotalScore> totalScores = new ArrayList<>();
+        for (Seat seat : seats) {
+            TotalScore totalScore = new TotalScore();
+            totalScore.setHead(seat.getHead());
+            totalScore.setNickname(seat.getNickname());
+            totalScore.setUserId(seat.getUserId());
+            totalScore.setScore(seat.getScore());
+            totalScores.add(totalScore);
+        }
+
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("gameType", "XINGNING_MAHJONG");
         jsonObject.put("roomOwner", roomOwner);
@@ -505,6 +517,7 @@ public class Room {
         jsonObject.put("peopleCount", count);
         jsonObject.put("roomNo", Integer.parseInt(roomNo));
         jsonObject.put("gameData", JSON.toJSONString(recordList).getBytes());
+        jsonObject.put("scoreData", JSON.toJSONString(totalScores).getBytes());
 
         ApiResponse apiResponse = JSON.parseObject(HttpUtil.urlConnectionByRsa("http://127.0.0.1:9999/api/gamerecord/create", jsonObject.toJSONString()), ApiResponse.class);
         if (!"SUCCESS".equals(apiResponse.getCode())) {

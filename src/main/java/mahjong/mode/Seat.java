@@ -11,7 +11,8 @@ public class Seat {
 
     private int seatNo;                         //座位号
     private int userId;                         //用户名
-    private int gold;                           //金币
+    private String nickname;                    //昵称
+    private String head;                        //头像
     private List<Integer> initialCards = new ArrayList<>();         //初始牌
     private List<Integer> cards = new ArrayList<>();                 //牌
     private List<Integer> pengCards = new ArrayList<>();             //碰牌
@@ -52,12 +53,20 @@ public class Seat {
         this.userId = userId;
     }
 
-    public int getGold() {
-        return gold;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void setGold(int gold) {
-        this.gold = gold;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public String getHead() {
+        return head;
+    }
+
+    public void setHead(String head) {
+        this.head = head;
     }
 
     public List<Integer> getInitialCards() {
