@@ -13,6 +13,7 @@ public class Seat {
     private int userId;                         //用户名
     private String nickname;                    //昵称
     private String head;                        //头像
+    private boolean sex;                        //性别
     private List<Integer> initialCards = new ArrayList<>();          //初始牌
     private List<Integer> cards = new ArrayList<>();                 //牌
     private List<Integer> pengCards = new ArrayList<>();             //碰牌
@@ -68,6 +69,14 @@ public class Seat {
 
     public void setHead(String head) {
         this.head = head;
+    }
+
+    public boolean isSex() {
+        return sex;
+    }
+
+    public void setSex(boolean sex) {
+        this.sex = sex;
     }
 
     public List<Integer> getInitialCards() {

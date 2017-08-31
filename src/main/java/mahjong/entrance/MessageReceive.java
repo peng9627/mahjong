@@ -72,7 +72,7 @@ public class MessageReceive implements Runnable {
         }
     }
 
-    private void close() {
+    public void close() {
         connect = false;
         try {
             client.close();

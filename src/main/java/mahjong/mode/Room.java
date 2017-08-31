@@ -199,6 +199,7 @@ public class Room {
         seat.setAreaString(user.getArea());
         seat.setHead(user.getHead());
         seat.setNickname(user.getNickname());
+        seat.setSex(user.getSex().equals("MAN"));
         seat.setScore(0);
         seat.setSeatNo(seatNos.get(0));
         seatNos.remove(0);
@@ -256,6 +257,9 @@ public class Room {
                 cardIndex = 6;
                 cardList.add(surplusCards.get(cardIndex));
                 surplusCards.remove(cardIndex);
+                cardIndex = 1;
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
             } else {
                 for (int i = 0; i < 13; i++) {
                     int cardIndex = (int) (Math.random() * surplusCards.size());
@@ -269,9 +273,9 @@ public class Room {
 
             if (seat.getUserId() == banker) {
                 operationSeatNo = seat.getSeatNo();
-                int cardIndex = (int) (Math.random() * surplusCards.size());
-                seat.getCards().add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
+//                int cardIndex = (int) (Math.random() * surplusCards.size());
+//                seat.getCards().add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
             }
 
             List<Integer> maList = new ArrayList<>();
@@ -403,9 +407,10 @@ public class Room {
             if (null != seat.getCardResult()) {
                 seatScore.put(seat.getSeatNo(), seat.getCardResult().getScore());
                 userResult.setCardScore(seat.getCardResult().getScore());
+                win[0] += seat.getCardResult().getScore();
                 if (seat.getCardResult().getScore() > 0) {
                     if (seat.getCardResult().getScoreTypes().contains(ScoreType.ZIMO_HU) || seat.getCardResult().getScoreTypes().contains(ScoreType.TIAN_HU)) {
-                        userResult.setCardScore(seat.getCardResult().getScore() * 3);
+                        userResult.setCardScore(seat.getCardResult().getScore());
                     }
                 } else {
                     loseSeats.add(seat.getSeatNo());
@@ -424,6 +429,7 @@ public class Room {
                 }
             }
             userResult.setGangScore(gangScore);
+            win[0] += gangScore;
 
             userResult.setWinOrLose(win[0]);
             resultResponse.addUserResult(userResult);
@@ -453,6 +459,7 @@ public class Room {
             if (maScore.containsKey(seat.getSeatNo())) {
                 maScore.put(seat.getUserId(), maScore.get(seat.getSeatNo()));
                 maScore.remove(seat.getSeatNo());
+                seat.setScore(seat.getScore() + maScore.get(seat.getUserId()));
             }
         }
 
@@ -480,7 +487,8 @@ public class Room {
             //TODO 统计
             Mahjong.MahjongSeatGameOver.Builder seatGameOver = Mahjong.MahjongSeatGameOver.newBuilder()
                     .setID(seat.getUserId()).setMinggang(seat.getMinggang()).setAngang(seat.getAngang())
-                    .setZimoCount(seat.getZimoCount()).setHuCount(seat.getHuCount()).setDianpaoCount(seat.getDianpaoCount());
+                    .setZimoCount(seat.getZimoCount()).setHuCount(seat.getHuCount())
+                    .setDianpaoCount(seat.getDianpaoCount()).setWinOrLose(seat.getScore());
             over.addGameOver(seatGameOver);
         }
 
@@ -494,8 +502,9 @@ public class Room {
                 while (redisService.exists(uuid)) {
                     uuid = UUID.randomUUID().toString().replace("-", "");
                 }
-                redisService.addCache("backkey" + uuid, seat.getUserId() + "", 10);
+                redisService.addCache("backkey" + uuid, seat.getUserId() + "", 1800);
                 over.setBackKey(uuid);
+                over.setDateTime(new Date().getTime());
                 response.setOperationType(GameBase.OperationType.OVER).setData(over.build().toByteString());
                 MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
             }
@@ -512,7 +521,7 @@ public class Room {
         }
 
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("gameType", "XINGNING_MAHJONG");
+        jsonObject.put("gameType", 0);
         jsonObject.put("roomOwner", roomOwner);
         jsonObject.put("people", people.toString().substring(1));
         jsonObject.put("gameTotal", gameTimes);
@@ -523,12 +532,13 @@ public class Room {
         jsonObject.put("scoreData", JSON.toJSONString(totalScores).getBytes());
 
         ApiResponse apiResponse = JSON.parseObject(HttpUtil.urlConnectionByRsa("http://127.0.0.1:9999/api/gamerecord/create", jsonObject.toJSONString()), ApiResponse.class);
-        if (!"SUCCESS".equals(apiResponse.getCode())) {
+        if (0 != apiResponse.getCode()) {
             LoggerFactory.getLogger(this.getClass()).error("http://127.0.0.1:9999/api/gamerecord/create?" + jsonObject.toJSONString());
         }
 
         //删除该桌
         redisService.delete("room" + roomNo);
+        redisService.delete("room_type" + roomNo);
         roomNo = null;
     }
 
@@ -616,7 +626,7 @@ public class Room {
             int finalScore = score;
             seats.stream().filter(seat -> seat.getUserId() != userId)
                     .forEach(seat -> {
-                        seat.setCardResult(new GameResult(scoreTypes, huSeat[0].getCards().get(huSeat[0].getCards().size() - 1), finalScore));
+                        seat.setCardResult(new GameResult(scoreTypes, huSeat[0].getCards().get(huSeat[0].getCards().size() - 1), -finalScore));
                         loseSize[0]++;
                     });
 
@@ -662,10 +672,9 @@ public class Room {
                 }
 
                 finalOperationSeat.setCardResult(new GameResult(scoreTypes, card[0], -score));
-                finalOperationSeat.setCardResult(new GameResult(scoreTypes, card[0], -score));
                 finalOperationSeat.setDianpaoCount(finalOperationSeat.getDianpaoCount() + 1);
                 seat.setCardResult(new GameResult(scoreTypes, card[0], score));
-                huSeat[0].setHuCount(huSeat[0].getHuCount() + 1);
+                seat.setHuCount(huSeat[0].getHuCount() + 1);
                 //胡牌
                 gameOver(response, redisService, huSeat[0].getSeatNo());
 
