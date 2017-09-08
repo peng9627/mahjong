@@ -1,5 +1,7 @@
 package mahjong.mode;
 
+import java.util.Date;
+
 /**
  * Created by pengyi
  * Date 2017/7/28.
@@ -9,6 +11,7 @@ public class OperationHistory {
     private int userId;
     private OperationHistoryType historyType;
     private Integer card;
+    private Date date;
 
     public OperationHistory() {
     }
@@ -17,6 +20,7 @@ public class OperationHistory {
         this.userId = userId;
         this.historyType = historyType;
         this.card = card;
+        this.date = new Date();
     }
 
     public int getUserId() {
@@ -41,5 +45,13 @@ public class OperationHistory {
 
     public void setCard(Integer card) {
         this.card = card;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

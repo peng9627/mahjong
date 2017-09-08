@@ -355,7 +355,97 @@ public class MahjongUtil {
      * @param cardList
      * @return
      */
-    public static boolean checkHu(List<Integer> cardList, int gameRules) {
+    public static boolean checkHu(List<Integer> cardList, int gameRules, int gui) {
+        List<Integer> cards = new ArrayList<>();
+        int guiSize = 0;
+        for (Integer card : cardList) {
+            if (card != gui) {
+                cards.add(card);
+            } else {
+                guiSize++;
+            }
+        }
+        List<Integer> guiCan = getComputePossible(cards, 2);
+        List<Integer> temp = new ArrayList<>();
+        switch (guiSize) {
+            case 0:
+                checkHu(cardList, gameRules);
+                break;
+            case 1:
+                for (int aBaoCan : guiCan) {
+                    temp.clear();
+                    temp.addAll(cards);
+                    temp.add(aBaoCan);
+                    if (checkHu(temp, gameRules)) {
+                        return true;
+                    }
+                }
+                break;
+            case 2:
+                for (int i = 0; i < guiCan.size(); i++) {
+                    temp.clear();
+                    temp.addAll(cards);
+                    temp.add(guiCan.get(i));
+                    for (int j = i; j < guiCan.size(); j++) {
+                        temp.add(guiCan.get(j));
+                        if (checkHu(temp, gameRules)) {
+                            return true;
+                        }
+                        Card.remove(temp, guiCan.get(j));
+                    }
+                }
+                break;
+            case 3:
+                for (int i = 0; i < guiCan.size(); i++) {
+                    temp.clear();
+                    temp.addAll(cards);
+                    temp.add(guiCan.get(i));
+                    for (int j = i; j < guiCan.size(); j++) {
+                        temp.add(guiCan.get(j));
+                        for (int k = j; k < guiCan.size(); k++) {
+                            temp.add(guiCan.get(k));
+                            if (checkHu(temp, gameRules)) {
+                                return true;
+                            }
+                            Card.remove(temp, guiCan.get(k));
+                        }
+                        Card.remove(temp, guiCan.get(j));
+                    }
+                }
+                break;
+            case 4:
+                for (int i = 0; i < guiCan.size(); i++) {
+                    temp.clear();
+                    temp.addAll(cards);
+                    temp.add(guiCan.get(i));
+                    for (int j = i; j < guiCan.size(); j++) {
+                        temp.add(guiCan.get(j));
+                        for (int k = j; k < guiCan.size(); k++) {
+                            temp.add(guiCan.get(k));
+                            for (int l = k; l < guiCan.size(); l++) {
+                                temp.add(guiCan.get(l));
+                                if (checkHu(temp, gameRules)) {
+                                    return true;
+                                }
+                                Card.remove(temp, guiCan.get(l));
+                            }
+                            Card.remove(temp, guiCan.get(k));
+                        }
+                        Card.remove(temp, guiCan.get(j));
+                    }
+                }
+                break;
+        }
+        return false;
+    }
+
+    /**
+     * 传入14张牌，判断是否可胡牌
+     *
+     * @param cardList
+     * @return
+     */
+    private static boolean checkHu(List<Integer> cardList, int gameRules) {
         List<Integer> handVals = new ArrayList<>();
         handVals.addAll(cardList);
         handVals.sort(new Comparator<Integer>() {
