@@ -1,6 +1,7 @@
 package mahjong.timeout;
 
 import com.alibaba.fastjson.JSON;
+import mahjong.constant.Constant;
 import mahjong.mode.GameBase;
 import mahjong.mode.Room;
 import mahjong.redis.RedisService;
@@ -34,7 +35,7 @@ public class OperationTimeout extends Thread {
     public void run() {
         synchronized (this) {
             try {
-                wait(15000);
+                wait(Constant.playCardTimeout);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

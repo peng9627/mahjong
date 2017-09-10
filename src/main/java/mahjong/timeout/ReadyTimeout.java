@@ -1,6 +1,7 @@
 package mahjong.timeout;
 
 import com.alibaba.fastjson.JSON;
+import mahjong.constant.Constant;
 import mahjong.entrance.MahjongTcpService;
 import mahjong.mode.GameBase;
 import mahjong.mode.GameStatus;
@@ -15,11 +16,11 @@ import mahjong.redis.RedisService;
  */
 public class ReadyTimeout extends Thread {
 
-    private String roomNo;
+    private Integer roomNo;
     private RedisService redisService;
     private GameBase.BaseConnection.Builder response;
 
-    public ReadyTimeout(String roomNo, RedisService redisService) {
+    public ReadyTimeout(Integer roomNo, RedisService redisService) {
         this.roomNo = roomNo;
         this.redisService = redisService;
         this.response = GameBase.BaseConnection.newBuilder();
@@ -29,7 +30,7 @@ public class ReadyTimeout extends Thread {
     public void run() {
         synchronized (this) {
             try {
-                wait(30000);
+                wait(Constant.readyTimeout);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

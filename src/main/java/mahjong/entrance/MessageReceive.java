@@ -73,9 +73,15 @@ public class MessageReceive implements Runnable {
     }
 
     public void close() {
+        close(true);
+    }
+
+    public void close(boolean notice) {
         connect = false;
         try {
-            client.close();
+            if (notice) {
+                client.close();
+            }
             if (is != null)
                 is.close();
             if (os != null)

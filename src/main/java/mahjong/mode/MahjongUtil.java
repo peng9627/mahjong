@@ -369,8 +369,7 @@ public class MahjongUtil {
         List<Integer> temp = new ArrayList<>();
         switch (guiSize) {
             case 0:
-                checkHu(cardList, gameRules);
-                break;
+                return checkHu(cardList, gameRules);
             case 1:
                 for (int aBaoCan : guiCan) {
                     temp.clear();

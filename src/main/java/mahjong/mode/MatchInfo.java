@@ -1,7 +1,9 @@
 package mahjong.mode;
 
+import com.alibaba.fastjson.JSON;
 import mahjong.entrance.MahjongTcpService;
 import mahjong.redis.RedisService;
+import mahjong.timeout.ReadyTimeout;
 
 import java.util.*;
 
@@ -76,12 +78,13 @@ public class MatchInfo {
         this.waitUsers = waitUsers;
     }
 
-    public int addRoom(int gameTimes, RedisService redisService, List<User> users, Map<Integer, Integer> userIdScore,
+    public int addRoom(String matchNo, int gameTimes, RedisService redisService, List<User> users, Map<Integer, Integer> userIdScore,
                        GameBase.BaseConnection.Builder response, GameBase.MatchData.Builder matchData) {
         Room room = new Room();
         room.setBaseScore(1);
         room.setRoomNo(roomNo(redisService));
-        room.setGameTimes(gameTimes);
+        //TODO 测试，要改回去
+        room.setGameTimes(1);
         room.setCount(4);
         room.setGhost(2);
         room.setGameStatus(GameStatus.WAITING);
@@ -94,8 +97,12 @@ public class MatchInfo {
                 MahjongTcpService.userClients.get(user.getUserId()).send(response.build(), user.getUserId());
             }
             room.sendRoomInfo(GameBase.RoomCardIntoResponse.newBuilder(), response, user.getUserId());
+            redisService.addCache("room_match" + room.getRoomNo(), matchNo);
+            redisService.addCache("reconnect" + user.getUserId(), "run_quickly," + room.getRoomNo());
         }
         room.sendSeatInfo(response);
+        new ReadyTimeout(Integer.parseInt(room.getRoomNo()), redisService).start();
+        redisService.addCache("room" + room.getRoomNo(), JSON.toJSONString(room));
         return Integer.parseInt(room.getRoomNo());
     }
 
