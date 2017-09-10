@@ -11,7 +11,7 @@ public class SeatRecord {
     private List<Integer> cards = new ArrayList<>();                //牌
     private int winOrLose;                      //输赢分数
     private GameResult cardResult;              //结算
-    private List<GameResult> gangResult;        //杠
+    private List<GameResult> gangResult = new ArrayList<>();        //杠
 
     public int getUserId() {
         return userId;

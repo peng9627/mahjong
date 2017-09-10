@@ -49,7 +49,7 @@ public class PlayCardTimeout extends Thread {
                 //找到人和牌
                 for (Seat seat : room.getSeats()) {
                     if (seat.getUserId() == userId) {
-                        room.playCard(seat.getCards().get(seat.getCards().size()), userId, GameBase.BaseAction.newBuilder(), response, redisService);
+                        room.playCard(seat.getCards().get(seat.getCards().size() - 1), userId, GameBase.BaseAction.newBuilder(), response, redisService);
                         break;
                     }
                 }

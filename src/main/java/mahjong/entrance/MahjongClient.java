@@ -7,6 +7,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import mahjong.constant.Constant;
 import mahjong.mode.*;
 import mahjong.redis.RedisService;
+import mahjong.timeout.PlayCardTimeout;
 import mahjong.timeout.ReadyTimeout;
 import mahjong.utils.HttpUtil;
 import mahjong.utils.LoggerUtil;
@@ -40,6 +41,11 @@ public class MahjongClient {
 
     void close() {
         if (0 != userId) {
+            synchronized (MahjongTcpService.userClients) {
+                if (MahjongTcpService.userClients.containsKey(userId) && messageReceive == MahjongTcpService.userClients.get(userId)) {
+                    MahjongTcpService.userClients.remove(userId);
+                }
+            }
             if (redisService.exists("room" + roomNo)) {
                 while (!redisService.lock("lock_room" + roomNo)) {
                 }
@@ -331,13 +337,18 @@ public class MahjongClient {
                                 room.hu(userId, response, redisService);//胡
                                 break;
                             case PASS:
-                                room.getSeats().stream().filter(seat -> seat.getUserId() == userId &&
-                                        room.getOperationSeatNo() != seat.getSeatNo()).forEach(seat -> {
-                                    seat.setOperation(4);
-                                    if (!room.passedChecked()) {//如果都操作完了，继续摸牌
-                                        room.getCard(response, room.getNextSeat(), redisService);
-                                    } else if (room.checkSurplus()) { //如果可以碰、杠牌，则碰、杠
-                                        room.pengOrGang(actionResponse, response, redisService, userId);
+                                room.getSeats().stream().filter(seat -> seat.getUserId() == userId).forEach(seat -> {
+                                    if (room.getOperationSeatNo() != seat.getSeatNo()) {
+                                        seat.setOperation(4);
+                                        if (!room.passedChecked()) {//如果都操作完了，继续摸牌
+                                            room.getCard(response, room.getNextSeat(), redisService);
+                                        } else if (room.checkSurplus()) { //如果可以碰、杠牌，则碰、杠
+                                            room.pengOrGang(actionResponse, response, redisService, userId);
+                                        }
+                                    } else {
+                                        if (redisService.exists("room_match" + roomNo)) {
+                                            new PlayCardTimeout(seat.getUserId(), roomNo, room.getHistoryList().size(), room.getGameCount(), redisService).start();
+                                        }
                                     }
                                 });
                                 break;
@@ -410,6 +421,16 @@ public class MahjongClient {
                             if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
                                 messageReceive.send(response.build(), seat.getUserId());
                             }
+                        }
+                        if (1 == room.getSeats().size()) {
+                            GameBase.DissolveConfirm dissolveConfirm = GameBase.DissolveConfirm.newBuilder().setDissolved(true).build();
+                            response.setOperationType(GameBase.OperationType.DISSOLVE_CONFIRM).setData(dissolveConfirm.toByteString());
+                            for (Seat seat : room.getSeats()) {
+                                if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
+                                    messageReceive.send(response.build(), seat.getUserId());
+                                }
+                            }
+                            room.roomOver(response, redisService);
                         }
                         redisService.unlock("lock_room" + roomNo);
                     }

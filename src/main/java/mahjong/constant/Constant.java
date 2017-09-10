@@ -12,7 +12,7 @@ public class Constant {
     public static String userListUrl = "/user/list";
     public static String gamerecordCreateUrl = "/gamerecord/create";
 
-    public static int readyTimeout = 5000;
-    public static int playCardTimeout = 18000;
+    public static int readyTimeout = 5;
+    public static int playCardTimeout = 18;
 
 }

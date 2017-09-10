@@ -38,6 +38,8 @@ public class Seat {
 
     private List<Integer> ma = new ArrayList<>();//买的马
     private int maCount;
+    private String ip;
+    private int gameCount;
 
     public int getSeatNo() {
         return seatNo;
@@ -253,6 +255,22 @@ public class Seat {
 
     public void setMaCount(int maCount) {
         this.maCount = maCount;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public void setIp(String ip) {
+        this.ip = ip;
+    }
+
+    public int getGameCount() {
+        return gameCount;
+    }
+
+    public void setGameCount(int gameCount) {
+        this.gameCount = gameCount;
     }
 
     public void clear() {

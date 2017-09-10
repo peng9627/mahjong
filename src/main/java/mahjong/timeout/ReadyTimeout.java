@@ -41,8 +41,8 @@ public class ReadyTimeout extends Thread {
             }
             Room room = JSON.parseObject(redisService.getCache("room" + roomNo), Room.class);
             if (0 == room.getGameStatus().compareTo(GameStatus.READYING) || 0 == room.getGameStatus().compareTo(GameStatus.WAITING)) {
+                boolean hasNoReady = false;
                 for (Seat seat : room.getSeats()) {
-                    boolean hasNoReady = false;
                     if (!seat.isReady()) {
                         seat.setReady(true);
                         hasNoReady = true;
@@ -50,10 +50,9 @@ public class ReadyTimeout extends Thread {
                         room.getSeats().stream().filter(seat1 -> MahjongTcpService.userClients.containsKey(seat1.getUserId())).forEach(seat1 ->
                                 MahjongTcpService.userClients.get(seat1.getUserId()).send(response.build(), seat1.getUserId()));
                     }
-
-                    if (hasNoReady) {
-                        room.start(response, redisService);
-                    }
+                }
+                if (hasNoReady) {
+                    room.start(response, redisService);
                 }
             }
             redisService.addCache("room" + roomNo, JSON.toJSONString(room));

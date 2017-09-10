@@ -89,6 +89,7 @@ public class MatchInfo {
         room.setGhost(2);
         room.setGameStatus(GameStatus.WAITING);
         room.setSeatNos(new ArrayList<>(Arrays.asList(1, 2, 3, 4)));
+        room.setBanker(users.get(0).getUserId());
         while (4 > room.getSeats().size()) {
             User user = users.remove(0);
             room.addSeat(user, userIdScore.get(user.getUserId()));
