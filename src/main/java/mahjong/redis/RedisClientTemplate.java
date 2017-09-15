@@ -267,7 +267,7 @@ public class RedisClientTemplate {
             while ((System.nanoTime() - nano) < timeoutNanos) {
                 if (shardedJedis.setnx(lockedKey, CoreDateUtils.formatDate(new Date(), "yyyyMMddHHmmssSSS")) == 1) {
                     shardedJedis.expire(lockedKey, 5);
-                    log.info("RedisSimpleLockUtils.lock-->lockedKey=‘{}’ , timeout={}毫秒", lockedKey, timeout);
+                    log.info("lock-->lockedKey=‘{}’", lockedKey);
                     return true;
                 }
                 // 短暂休眠，nano避免出现活锁
@@ -332,6 +332,6 @@ public class RedisClientTemplate {
             shardedJedis.close();
         }
 
-        log.info("RedisSimpleLockUtils.unlock-->lockedKey=‘{}’ ,del lock={}", lockedKey, del);
+        log.info("unlock-->lockedKey=‘{}’", lockedKey);
     }
 }

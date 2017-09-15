@@ -263,40 +263,40 @@ public class Room {
             List<Integer> cardList = new ArrayList<>();
 
             if (banker == seat.getUserId()) {
-                int cardIndex = 1;
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-                cardList.add(surplusCards.get(cardIndex));
-                surplusCards.remove(cardIndex);
-//                for (int i = 0; i < 14; i++) {
-//                    int cardIndex = (int) (Math.random() * surplusCards.size());
-//                    cardList.add(surplusCards.get(cardIndex));
-//                    surplusCards.remove(cardIndex);
-//                }
+//                int cardIndex = 0;
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+//                cardList.add(surplusCards.get(cardIndex));
+//                surplusCards.remove(cardIndex);
+                for (int i = 0; i < 14; i++) {
+                    int cardIndex = (int) (Math.random() * surplusCards.size());
+                    cardList.add(surplusCards.get(cardIndex));
+                    surplusCards.remove(cardIndex);
+                }
             } else {
                 for (int i = 0; i < 13; i++) {
                     int cardIndex = (int) (Math.random() * surplusCards.size());
@@ -519,6 +519,7 @@ public class Room {
         } else {
             continuityBanker = 0;
         }
+        banker = tempBanker;
 
 
         for (Seat seat : seats) {
@@ -583,6 +584,11 @@ public class Room {
                             userResult.setCardScore(userResult.getCardScore() + baoCardScore);
                             userResult.setGangScore(userResult.getGangScore() + baoGangScore);
                             userResult.setMaScore(userResult.getMaScore() + baoMaScore);
+                        }
+                    }
+                    for (Seat seat : seats) {
+                        if (seat.getUserId() == operationHistory.getUserId()) {
+                            seat.getCardResult().getScoreTypes().add(ScoreType.GANGBAO);
                         }
                     }
                 }
@@ -707,6 +713,23 @@ public class Room {
                             matchUser.setScore(seat.getScore());
                         }
                     }
+                    if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
+                        MahjongTcpService.userClients.get(seat.getUserId()).send(response.setOperationType(GameBase.OperationType.ROOM_INFO).clearData().build(), seat.getUserId());
+                        GameBase.RoomSeatsInfo.Builder roomSeatsInfo = GameBase.RoomSeatsInfo.newBuilder();
+                        GameBase.SeatResponse.Builder seatResponse = GameBase.SeatResponse.newBuilder();
+                        seatResponse.setSeatNo(1);
+                        seatResponse.setID(seat.getUserId());
+                        seatResponse.setScore(seat.getScore());
+                        seatResponse.setReady(false);
+                        seatResponse.setIp(seat.getIp());
+                        seatResponse.setGameCount(seat.getGameCount());
+                        seatResponse.setNickname(seat.getNickname());
+                        seatResponse.setHead(seat.getHead());
+                        seatResponse.setSex(seat.isSex());
+                        seatResponse.setOffline(false);
+                        roomSeatsInfo.addSeats(seatResponse.build());
+                        MahjongTcpService.userClients.get(seat.getUserId()).send(response.setOperationType(GameBase.OperationType.SEAT_INFO).setData(roomSeatsInfo.build().toByteString()).build(), seat.getUserId());
+                    }
                 }
 
                 //用户对应分数
@@ -737,6 +760,11 @@ public class Room {
                                 if (matchUser.getUserId() == seat.getUserId()) {
                                     if (seat.getScore() < 500 + (addScoreCount * 100) && matchUsers.size() > arena.getCount() / 2) {
                                         matchUsers.remove(matchUser);
+                                        response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(GameBase.MatchResult.newBuilder()
+                                                .setRanking(matchUsers.size()).build().toByteString());
+                                        if (MahjongTcpService.userClients.containsKey(matchUser.getUserId())) {
+                                            MahjongTcpService.userClients.get(matchUser.getUserId()).send(response.build(), matchUser.getUserId());
+                                        }
                                         redisService.delete("reconnect" + seat.getUserId());
                                     } else {
                                         thisWait.add(matchUser);
@@ -838,7 +866,13 @@ public class Room {
                             }
                         });
                         while (waitUsers.size() > 4) {
-                            MatchUser matchUser = waitUsers.remove(4);
+                            MatchUser matchUser = waitUsers.remove(waitUsers.size() - 1);
+
+                            response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(GameBase.MatchResult.newBuilder()
+                                    .setRanking(matchUsers.size()).build().toByteString());
+                            if (MahjongTcpService.userClients.containsKey(matchUser.getUserId())) {
+                                MahjongTcpService.userClients.get(matchUser.getUserId()).send(response.build(), matchUser.getUserId());
+                            }
                             redisService.delete("reconnect" + matchUser.getUserId());
                         }
 
@@ -870,7 +904,6 @@ public class Room {
                         }
                         break;
                     case 5:
-                        GameBase.MatchResult.Builder matchResult = GameBase.MatchResult.newBuilder();
                         matchUsers.sort(new Comparator<MatchUser>() {
                             @Override
                             public int compare(MatchUser o1, MatchUser o2) {
@@ -878,16 +911,12 @@ public class Room {
                             }
                         });
                         for (int i = 0; i < matchUsers.size(); i++) {
-                            matchResult.addMatchUserResult(GameBase.MatchUserResult.newBuilder()
-                                    .setUserId(matchUsers.get(i).getUserId()).setRanking(i + 1));
-                        }
-                        matchInfo.setStatus(-1);
-                        response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(matchResult.build().toByteString());
-                        for (Seat seat : seats) {
-                            if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
-                                MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
+                            response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(GameBase.MatchResult.newBuilder().setRanking(i + 1).build().toByteString());
+                            if (MahjongTcpService.userClients.containsKey(matchUsers.get(i).getUserId())) {
+                                MahjongTcpService.userClients.get(matchUsers.get(i).getUserId()).send(response.build(), matchUsers.get(i).getUserId());
                             }
                         }
+                        matchInfo.setStatus(-1);
                         break;
                 }
                 if (0 < matchInfo.getStatus()) {
@@ -927,7 +956,6 @@ public class Room {
      * @param seat 座位
      */
     public void checkSelfGetCard(GameBase.BaseConnection.Builder response, Seat seat, RedisService redisService) {
-        System.out.println("摸牌后检测是否可以自摸、暗杠、扒杠");
         GameBase.AskResponse.Builder builder = GameBase.AskResponse.newBuilder();
         builder.setTimeCounter(redisService.exists("room_match" + roomNo) ? 8 : 0);
         if (MahjongUtil.checkHu(seat.getCards(), gameRules, gui)) {
@@ -993,9 +1021,9 @@ public class Room {
                     score *= 2;
                 }
                 scoreTypes.add(ScoreType.ZIMO_HU);
-                score += 1;
+                score += 2;
             }
-            if (banker == userId && 1 == continuityBanker) {
+            if (banker == userId && 0 < continuityBanker) {
                 score *= 2;
                 scoreTypes.add(ScoreType.ZHUANGYING);
             }
@@ -1145,7 +1173,6 @@ public class Room {
      */
 
     public void checkCard(Integer card, GameBase.BaseConnection.Builder response, RedisService redisService, int userId) {
-        System.out.println("出牌后检查是否有人能胡、杠、碰");
         GameBase.AskResponse.Builder builder = GameBase.AskResponse.newBuilder();
         builder.setTimeCounter(redisService.exists("room_match" + roomNo) ? 8 : 0);
         //先检查胡，胡优先

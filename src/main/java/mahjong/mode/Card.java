@@ -107,7 +107,7 @@ public class Card {
      */
     public static boolean isQF(List<Integer> cardList) {
         List<Integer> cards = Arrays.asList(31, 33, 35, 41, 43, 45, 47);
-        return containAll(cardList, cards) && containAll(cards, cardList);
+        return containAll(cards, cardList);
     }
 
     public static boolean legal(int card) {

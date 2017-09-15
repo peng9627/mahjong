@@ -186,8 +186,14 @@ public class MahjongUtil {
         cardList.addAll(cards);
 
         //碰碰胡
-        if (get_san(cardList).size() + 2 == cards.size() && 1 == (gameRules >> 6) % 2) {
-            scoreTypes.add(ScoreType.PENGPENG_HU);
+        if (1 == (gameRules >> 6) % 2) {
+            List<Integer> temp = new ArrayList<>();
+            temp.addAll(cardList);
+            List<Integer> san = get_san(temp);
+            Card.removeAll(temp, san);
+            if (temp.size() == 2 && temp.get(0).intValue() == temp.get(1)) {
+                scoreTypes.add(ScoreType.PENGPENG_HU);
+            }
         }
 
         List<Integer> allCard = new ArrayList<>();
@@ -238,9 +244,24 @@ public class MahjongUtil {
             scoreTypes.add(ScoreType.SHISANYAO_HU);
         }
 
-        //全风
+        //全番
         if (Card.isQF(allCard) && 1 == (gameRules >> 4) % 2) {
             scoreTypes.add(ScoreType.QUANFAN_HU);
+            if (scoreTypes.contains(ScoreType.HUNYISE_HU)) {
+                scoreTypes.remove(ScoreType.HUNYISE_HU);
+            }
+            if (scoreTypes.contains(ScoreType.HUNYAOJIU_HU)) {
+                scoreTypes.remove(ScoreType.HUNYAOJIU_HU);
+            }
+        }
+
+        if (scoreTypes.contains(ScoreType.SHISANYAO_HU)) {
+            if (scoreTypes.contains(ScoreType.HUNYAOJIU_HU)) {
+                scoreTypes.remove(ScoreType.HUNYAOJIU_HU);
+            }
+            if (scoreTypes.contains(ScoreType.QUANYAOJIU_HU)) {
+                scoreTypes.remove(ScoreType.QUANYAOJIU_HU);
+            }
         }
 
         return scoreTypes;
@@ -253,39 +274,37 @@ public class MahjongUtil {
      * @return
      */
     public static int getScore(List<ScoreType> scoreTypes) {
-        int score = 1;
+        int score = 0;
         for (ScoreType scoreType : scoreTypes) {
             switch (scoreType) {
                 case HUNYISE_HU:
                 case MENQING_HU:
                 case PENGPENG_HU:
-                    score *= 2;
+                    score += 4;
                     break;
                 case QIXIAODUI_HU:
-                    score *= 3;
+                    score += 6;
                     break;
                 case QINGYISE_HU:
                 case HUNYAOJIU_HU:
-                    score *= 4;
-                    break;
                 case HAOHUAQIXIAODUI_HU:
-                    score *= 6;
+                    score += 8;
                     break;
                 case QUANYAOJIU_HU:
-                    score *= 8;
+                    score += 16;
                     break;
                 case SHUANGHAOHUAQIXIAODUI_HU:
-                    score *= 9;
+                    score += 18;
                     break;
                 case SHISANYAO_HU:
                 case QUANFAN_HU:
-                    score *= 10;
+                    score += 20;
                     break;
                 case SANHAOHUAQIXIAODUI_HU:
-                    score *= 12;
+                    score += 24;
                     break;
                 case SHIBALUOHAN:
-                    score *= 18;
+                    score += 36;
                     break;
             }
         }
