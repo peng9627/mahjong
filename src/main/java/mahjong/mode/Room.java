@@ -10,6 +10,7 @@ import mahjong.entrance.MahjongTcpService;
 import mahjong.redis.RedisService;
 import mahjong.timeout.OperationTimeout;
 import mahjong.timeout.PlayCardTimeout;
+import mahjong.timeout.ReadyTimeout;
 import mahjong.utils.HttpUtil;
 import org.slf4j.LoggerFactory;
 
@@ -615,7 +616,9 @@ public class Room {
         if (gameCount == gameTimes) {
             roomOver(response, redisService);
         } else {
-//            new ReadyTimeout(roomNo, redisService).start();
+            if (redisService.exists("room_match" + roomNo)) {
+                new ReadyTimeout(Integer.valueOf(roomNo), redisService).start();
+            }
         }
     }
 
