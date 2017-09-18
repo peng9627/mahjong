@@ -194,6 +194,8 @@ public class MahjongClient {
 
                                 Mahjong.MahjongGameInfo.Builder gameInfo = Mahjong.MahjongGameInfo.newBuilder();
                                 gameInfo.setSurplusCardsSize(room.getSurplusCards().size());
+                                gameInfo.setBanker(room.getBanker());
+                                gameInfo.addAllDice(Arrays.asList(room.getDice()));
                                 Seat operationSeat = null;
                                 for (Seat seat : room.getSeats()) {
                                     if (seat.getSeatNo() == room.getOperationSeatNo()) {

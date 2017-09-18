@@ -171,7 +171,7 @@ public final class Xingning {
 
         public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-            return mahjong.mode.Xingning.internal_static_XingningMahjongIntoResponse_descriptor;
+      return mahjong.mode.Xingning.internal_static_XingningMahjongIntoResponse_descriptor;
         }
 
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -1106,7 +1106,7 @@ public final class Xingning {
                             }
                             history_.add(
                                     input.readMessage(mahjong.mode.GameBase.OperationHistory.parser(), extensionRegistry));
-                            break;
+              break;
                         }
                         case 26: {
                             mahjong.mode.Mahjong.MahjongResultResponse.Builder subBuilder = null;
@@ -1941,9 +1941,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             *操作记录
+             * 操作记录
              * </pre>
-             *
+             * <p>
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public Builder addHistory(
@@ -1979,9 +1979,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             *操作记录
+             * 操作记录
              * </pre>
-             *
+             * <p>
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public Builder addAllHistory(
@@ -1999,9 +1999,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             *操作记录
+             * 操作记录
              * </pre>
-             *
+             * <p>
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public Builder clearHistory() {
@@ -2047,24 +2047,25 @@ public final class Xingning {
 
             /**
              * <pre>
-             *操作记录
+             * 操作记录
              * </pre>
-             *
+             * <p>
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public mahjong.mode.GameBase.OperationHistoryOrBuilder getHistoryOrBuilder(
                     int index) {
                 if (historyBuilder_ == null) {
-                    return history_.get(index);  } else {
+                    return history_.get(index);
+                } else {
                     return historyBuilder_.getMessageOrBuilder(index);
                 }
             }
 
             /**
              * <pre>
-             *操作记录
+             * 操作记录
              * </pre>
-             *
+             * <p>
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public java.util.List<? extends mahjong.mode.GameBase.OperationHistoryOrBuilder>
@@ -2103,9 +2104,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             *操作记录
+             * 操作记录
              * </pre>
-             *
+             * <p>
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public java.util.List<mahjong.mode.GameBase.OperationHistory.Builder>
@@ -2315,55 +2316,53 @@ public final class Xingning {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
             internal_static_XingningMahjongReplayResponse_fieldAccessorTable;
 
-    public static com.google.protobuf.Descriptors.FileDescriptor
-    getDescriptor() {
-        return descriptor;
-    }
-
-    private static com.google.protobuf.Descriptors.FileDescriptor
-            descriptor;
-
-    static {
-        java.lang.String[] descriptorData = {
-                "\n\016xingning.proto\032\016gameBase.proto\032\rmahjon" +
-                        "g.proto\"\205\001\n\033XingningMahjongIntoResponse\022" +
-                        "\021\n\tbaseScore\030\001 \001(\r\022\021\n\tgameTimes\030\002 \001(\r\022\021\n" +
-                        "\tgameRules\030\003 \001(\r\022\r\n\005ghost\030\004 \001(\r\022\017\n\007maCou" +
-                        "nt\030\005 \001(\r\022\r\n\005count\030\006 \001(\r\"\221\001\n\035XingningMahj" +
-                        "ongReplayResponse\022$\n\005start\030\001 \001(\0132\025.Mahjo" +
-                        "ngStartResponse\022\"\n\007history\030\002 \003(\0132\021.Opera" +
-                        "tionHistory\022&\n\006result\030\003 \001(\0132\026.MahjongRes" +
-                        "ultResponseB\016\n\014mahjong.modeb\006proto3"
+  public static com.google.protobuf.Descriptors.FileDescriptor
+      getDescriptor() {
+    return descriptor;
+  }
+  private static  com.google.protobuf.Descriptors.FileDescriptor
+      descriptor;
+  static {
+    java.lang.String[] descriptorData = {
+      "\n\016xingning.proto\032\016gameBase.proto\032\rmahjon" +
+      "g.proto\"\205\001\n\033XingningMahjongIntoResponse\022" +
+      "\021\n\tbaseScore\030\001 \001(\r\022\021\n\tgameTimes\030\002 \001(\r\022\021\n" +
+      "\tgameRules\030\003 \001(\r\022\r\n\005ghost\030\004 \001(\r\022\017\n\007maCou" +
+      "nt\030\005 \001(\r\022\r\n\005count\030\006 \001(\r\"\221\001\n\035XingningMahj" +
+      "ongReplayResponse\022$\n\005start\030\001 \001(\0132\025.Mahjo" +
+      "ngStartResponse\022\"\n\007history\030\002 \003(\0132\021.Opera" +
+      "tionHistory\022&\n\006result\030\003 \001(\0132\026.MahjongRes" +
+      "ultResponseB\016\n\014mahjong.modeb\006proto3"
+    };
+    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
+        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
+          public com.google.protobuf.ExtensionRegistry assignDescriptors(
+              com.google.protobuf.Descriptors.FileDescriptor root) {
+            descriptor = root;
+            return null;
+          }
         };
-        com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-                new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-                    public com.google.protobuf.ExtensionRegistry assignDescriptors(
-                            com.google.protobuf.Descriptors.FileDescriptor root) {
-                        descriptor = root;
-                        return null;
-                    }
-                };
-        com.google.protobuf.Descriptors.FileDescriptor
-                .internalBuildGeneratedFileFrom(descriptorData,
-                        new com.google.protobuf.Descriptors.FileDescriptor[] {
-                                mahjong.mode.GameBase.getDescriptor(),
-                                mahjong.mode.Mahjong.getDescriptor(),
-                        }, assigner);
-        internal_static_XingningMahjongIntoResponse_descriptor =
-                getDescriptor().getMessageTypes().get(0);
-        internal_static_XingningMahjongIntoResponse_fieldAccessorTable = new
-                com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-                internal_static_XingningMahjongIntoResponse_descriptor,
-                new java.lang.String[] { "BaseScore", "GameTimes", "GameRules", "Ghost", "MaCount", "Count", });
-        internal_static_XingningMahjongReplayResponse_descriptor =
-                getDescriptor().getMessageTypes().get(1);
-        internal_static_XingningMahjongReplayResponse_fieldAccessorTable = new
-                com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-                internal_static_XingningMahjongReplayResponse_descriptor,
-                new java.lang.String[] { "Start", "History", "Result", });
-        mahjong.mode.GameBase.getDescriptor();
-        mahjong.mode.Mahjong.getDescriptor();
-    }
+    com.google.protobuf.Descriptors.FileDescriptor
+      .internalBuildGeneratedFileFrom(descriptorData,
+        new com.google.protobuf.Descriptors.FileDescriptor[] {
+          mahjong.mode.GameBase.getDescriptor(),
+          mahjong.mode.Mahjong.getDescriptor(),
+        }, assigner);
+    internal_static_XingningMahjongIntoResponse_descriptor =
+      getDescriptor().getMessageTypes().get(0);
+    internal_static_XingningMahjongIntoResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_XingningMahjongIntoResponse_descriptor,
+        new java.lang.String[] { "BaseScore", "GameTimes", "GameRules", "Ghost", "MaCount", "Count", });
+    internal_static_XingningMahjongReplayResponse_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_XingningMahjongReplayResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_XingningMahjongReplayResponse_descriptor,
+        new java.lang.String[] { "Start", "History", "Result", });
+    mahjong.mode.GameBase.getDescriptor();
+    mahjong.mode.Mahjong.getDescriptor();
+  }
 
   // @@protoc_insertion_point(outer_class_scope)
 }

@@ -623,6 +623,22 @@ public class Room {
     }
 
     public void roomOver(GameBase.BaseConnection.Builder response, RedisService redisService) {
+        if (0 == gameStatus.compareTo(GameStatus.WAITING)) {
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("flowType", 1);
+            if (8 == gameTimes) {
+                jsonObject.put("money", 1);
+            } else {
+                jsonObject.put("money", 2);
+            }
+            jsonObject.put("description", "开房间退回" + roomNo);
+            jsonObject.put("userId", roomOwner);
+            ApiResponse moneyDetail = JSON.parseObject(HttpUtil.urlConnectionByRsa("http://127.0.0.1:9999/api/money_detailed/create", jsonObject.toJSONString()), new TypeReference<ApiResponse<User>>() {
+            });
+            if (0 != moneyDetail.getCode()) {
+                LoggerFactory.getLogger(this.getClass()).error("http://127.0.0.1:9999/api/money_detailed/create?" + jsonObject.toJSONString());
+            }
+        }
         Mahjong.MahjongOverResponse.Builder over = Mahjong.MahjongOverResponse.newBuilder();
 
         for (Seat seat : seats) {
