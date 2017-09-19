@@ -81,11 +81,37 @@ public class Card {
      * 十三幺
      *
      * @param cardList
+     * @param guiSize
      * @return
      */
-    public static boolean isSSY(List<Integer> cardList) {
-        List<Integer> cards = Arrays.asList(1, 9, 11, 19, 21, 29, 31, 33, 35, 41, 43, 45, 47);
-        return containAll(cardList, cards) && containAll(cards, cardList);
+    public static boolean isSSY(List<Integer> cardList, int guiSize) {
+        List<Integer> cards = new ArrayList<>(Arrays.asList(1, 9, 11, 19, 21, 29, 31, 33, 35, 41, 43, 45, 47));
+        if (guiSize == 0) {
+            return containAll(cardList, cards) && containAll(cards, cardList);
+        }
+        List<Integer> temp = new ArrayList<>();
+        temp.addAll(cardList);
+        for (Integer card : cards) {
+            boolean find = false;
+            for (Integer handCard : cardList) {
+                if (card.intValue() == handCard) {
+                    temp.remove(handCard);
+                    find = true;
+                    break;
+                }
+            }
+            if (!find) {
+                guiSize--;
+                if (0 == guiSize) {
+                    return false;
+                }
+            }
+        }
+
+        if (Card.containAll(cards, temp)) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -120,7 +146,7 @@ public class Card {
      * @return
      */
     public static List<Integer> ma_my() {
-        return Arrays.asList(1, 5, 9, 11, 15, 19, 21, 25, 29, 41);
+        return Arrays.asList(1, 5, 9, 11, 15, 19, 21, 25, 29, 31, 41);
     }
 
     /**
@@ -129,7 +155,7 @@ public class Card {
      * @return
      */
     public static List<Integer> ma_next() {
-        return Arrays.asList(2, 6, 12, 16, 22, 26, 31, 43);
+        return Arrays.asList(2, 6, 12, 16, 22, 26, 33, 43);
     }
 
     /**
@@ -138,7 +164,7 @@ public class Card {
      * @return
      */
     public static List<Integer> ma_opposite() {
-        return Arrays.asList(3, 7, 13, 17, 23, 27, 33, 45);
+        return Arrays.asList(3, 7, 13, 17, 23, 27, 35, 45);
     }
 
     /**
@@ -147,7 +173,7 @@ public class Card {
      * @return
      */
     public static List<Integer> ma_last() {
-        return Arrays.asList(4, 8, 14, 18, 24, 28, 35, 47);
+        return Arrays.asList(4, 8, 14, 18, 24, 28, 47);
     }
 
     public static void remove(List<Integer> cards, Integer card) {

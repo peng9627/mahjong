@@ -2271,50 +2271,49 @@ public final class Xingning {
 
         // @@protoc_insertion_point(class_scope:XingningMahjongReplayResponse)
         private static final mahjong.mode.Xingning.XingningMahjongReplayResponse DEFAULT_INSTANCE;
-
-        static {
-            DEFAULT_INSTANCE = new mahjong.mode.Xingning.XingningMahjongReplayResponse();
-        }
-
-        public static mahjong.mode.Xingning.XingningMahjongReplayResponse getDefaultInstance() {
-            return DEFAULT_INSTANCE;
-        }
-
-        private static final com.google.protobuf.Parser<XingningMahjongReplayResponse>
-                PARSER = new com.google.protobuf.AbstractParser<XingningMahjongReplayResponse>() {
-            public XingningMahjongReplayResponse parsePartialFrom(
-                    com.google.protobuf.CodedInputStream input,
-                    com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-                    throws com.google.protobuf.InvalidProtocolBufferException {
-                return new XingningMahjongReplayResponse(input, extensionRegistry);
-            }
-        };
-
-        public static com.google.protobuf.Parser<XingningMahjongReplayResponse> parser() {
-            return PARSER;
-        }
-
-        @java.lang.Override
-        public com.google.protobuf.Parser<XingningMahjongReplayResponse> getParserForType() {
-            return PARSER;
-        }
-
-        public mahjong.mode.Xingning.XingningMahjongReplayResponse getDefaultInstanceForType() {
-            return DEFAULT_INSTANCE;
-        }
-
+    static {
+      DEFAULT_INSTANCE = new mahjong.mode.Xingning.XingningMahjongReplayResponse();
     }
 
-    private static final com.google.protobuf.Descriptors.Descriptor
-            internal_static_XingningMahjongIntoResponse_descriptor;
-    private static final
+    public static mahjong.mode.Xingning.XingningMahjongReplayResponse getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<XingningMahjongReplayResponse>
+        PARSER = new com.google.protobuf.AbstractParser<XingningMahjongReplayResponse>() {
+      public XingningMahjongReplayResponse parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+          return new XingningMahjongReplayResponse(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<XingningMahjongReplayResponse> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<XingningMahjongReplayResponse> getParserForType() {
+      return PARSER;
+    }
+
+    public mahjong.mode.Xingning.XingningMahjongReplayResponse getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_XingningMahjongIntoResponse_descriptor;
+  private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-            internal_static_XingningMahjongIntoResponse_fieldAccessorTable;
-    private static final com.google.protobuf.Descriptors.Descriptor
-            internal_static_XingningMahjongReplayResponse_descriptor;
-    private static final
+      internal_static_XingningMahjongIntoResponse_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_XingningMahjongReplayResponse_descriptor;
+  private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-            internal_static_XingningMahjongReplayResponse_fieldAccessorTable;
+      internal_static_XingningMahjongReplayResponse_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {

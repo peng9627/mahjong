@@ -86,7 +86,8 @@ public class MatchInfo {
         //TODO 测试，要改回去
         room.setGameTimes(1);
         room.setCount(4);
-        room.setGhost(2);
+        room.setGhost(1);
+        room.setGameRules(16382);
         room.setGameStatus(GameStatus.WAITING);
         room.setSeatNos(new ArrayList<>(Arrays.asList(1, 2, 3, 4)));
         room.setBanker(users.get(0).getUserId());

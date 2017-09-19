@@ -11,7 +11,8 @@ public class SeatRecord {
     private List<Integer> cards = new ArrayList<>();                //牌
     private int winOrLose;                      //输赢分数
     private GameResult cardResult;              //结算
-    private List<GameResult> gangResult = new ArrayList<>();        //杠
+    private List<GameResult> mingGangResult = new ArrayList<>();        //明杠
+    private List<GameResult> anGangResult = new ArrayList<>();        //暗杠
 
     public int getUserId() {
         return userId;
@@ -69,11 +70,19 @@ public class SeatRecord {
         this.cardResult = cardResult;
     }
 
-    public List<GameResult> getGangResult() {
-        return gangResult;
+    public List<GameResult> getMingGangResult() {
+        return mingGangResult;
     }
 
-    public void setGangResult(List<GameResult> gangResult) {
-        this.gangResult = gangResult;
+    public void setMingGangResult(List<GameResult> mingGangResult) {
+        this.mingGangResult = mingGangResult;
+    }
+
+    public List<GameResult> getAnGangResult() {
+        return anGangResult;
+    }
+
+    public void setAnGangResult(List<GameResult> anGangResult) {
+        this.anGangResult = anGangResult;
     }
 }

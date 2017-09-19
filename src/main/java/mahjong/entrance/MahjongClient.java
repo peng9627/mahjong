@@ -195,7 +195,9 @@ public class MahjongClient {
                                 Mahjong.MahjongGameInfo.Builder gameInfo = Mahjong.MahjongGameInfo.newBuilder();
                                 gameInfo.setSurplusCardsSize(room.getSurplusCards().size());
                                 gameInfo.setBanker(room.getBanker());
-                                gameInfo.addAllDice(Arrays.asList(room.getDice()));
+                                if (null != room.getDice() && 0 < room.getDice().length) {
+                                    gameInfo.addAllDice(Arrays.asList(room.getDice()));
+                                }
                                 Seat operationSeat = null;
                                 for (Seat seat : room.getSeats()) {
                                     if (seat.getSeatNo() == room.getOperationSeatNo()) {
@@ -256,18 +258,16 @@ public class MahjongClient {
                                 GameBase.DissolveApply dissolveApply = GameBase.DissolveApply.newBuilder()
                                         .setError(GameBase.ErrorCode.SUCCESS).setUserId(Integer.valueOf(user)).build();
                                 response.setOperationType(GameBase.OperationType.DISSOLVE).setData(dissolveApply.toByteString());
-                                for (Seat seat : room.getSeats()) {
-                                    if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
-                                        messageReceive.send(response.build(), seat.getUserId());
-                                    }
+                                if (MahjongTcpService.userClients.containsKey(userId)) {
+                                    messageReceive.send(response.build(), userId);
                                 }
 
                                 GameBase.DissolveReplyResponse.Builder replyResponse = GameBase.DissolveReplyResponse.newBuilder();
                                 for (Seat seat : room.getSeats()) {
                                     if (dissolveStatus.contains("-1" + seat.getUserId())) {
-                                        replyResponse.addDissolve(GameBase.Dissolve.newBuilder().setUserId(userId).setAgree(true));
+                                        replyResponse.addDissolve(GameBase.Dissolve.newBuilder().setUserId(seat.getUserId()).setAgree(true));
                                     } else if (dissolveStatus.contains("-2" + seat.getUserId())) {
-                                        replyResponse.addDissolve(GameBase.Dissolve.newBuilder().setUserId(userId).setAgree(false));
+                                        replyResponse.addDissolve(GameBase.Dissolve.newBuilder().setUserId(seat.getUserId()).setAgree(false));
                                     }
                                 }
                                 response.setOperationType(GameBase.OperationType.DISSOLVE_REPLY).setData(replyResponse.build().toByteString());
