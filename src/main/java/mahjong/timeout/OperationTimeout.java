@@ -65,12 +65,22 @@ public class OperationTimeout extends Thread {
                     room.getSeats().stream().filter(seat -> seat.getUserId() == userId).forEach(seat -> {
                         if (room.getOperationSeatNo() != seat.getSeatNo()) {
                             seat.setOperation(4);
+                            if (MahjongTcpService.userClients.containsKey(userId)) {
+                                System.out.println("发送PASS" + userId);
+                                MahjongTcpService.userClients.get(userId).send(response.setOperationType(GameBase.OperationType.ACTION)
+                                        .setData(GameBase.BaseAction.newBuilder().setOperationId(GameBase.ActionId.PASS).clearData().build().toByteString()).build(), userId);
+                            }
                             if (!room.passedChecked()) {//如果都操作完了，继续摸牌
                                 room.getCard(response, room.getNextSeat(), redisService);
                             } else if (room.checkSurplus()) { //如果可以碰、杠牌，则碰、杠
                                 room.pengOrGang(GameBase.BaseAction.newBuilder().setID(seat.getUserId()), response, redisService, userId);
                             }
                         } else {
+                            if (MahjongTcpService.userClients.containsKey(userId)) {
+                                System.out.println("发送PASS" + userId);
+                                MahjongTcpService.userClients.get(userId).send(response.setOperationType(GameBase.OperationType.ACTION)
+                                        .setData(GameBase.BaseAction.newBuilder().setOperationId(GameBase.ActionId.PASS).clearData().build().toByteString()).build(), userId);
+                            }
                             new PlayCardTimeout(seat.getUserId(), roomNo, room.getHistoryList().size(), room.getGameCount(), redisService).start();
                         }
                     });

@@ -270,40 +270,14 @@ public class Room {
             List<Integer> cardList = new ArrayList<>();
 
             if (banker == seat.getUserId()) {
-//                int cardIndex = 0;
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-//                cardList.add(surplusCards.get(cardIndex));
-//                surplusCards.remove(cardIndex);
-                for (int i = 0; i < 14; i++) {
+                for (int i = 0; i < 13; i++) {
                     int cardIndex = 0;
                     cardList.add(surplusCards.get(cardIndex));
                     surplusCards.remove(cardIndex);
                 }
+                int cardIndex = surplusCards.indexOf(31);
+                cardList.add(surplusCards.get(cardIndex));
+                surplusCards.remove(cardIndex);
             } else {
                 for (int i = 0; i < 13; i++) {
                     int cardIndex = (int) (Math.random() * surplusCards.size());
@@ -538,49 +512,57 @@ public class Room {
         int zhongMa = 0;
         int maUser = 0;
         if (winSeats.size() == 1) {
+            for (Seat seat : seats) {
+                if (seat.getUserId() == winSeats.get(0)) {
+                    zhongMa = MahjongUtil.GetLuckMa(seat.getSeatNo(), maSeat, count, ma).size();
+                    break;
+                }
+            }
             maUser = winSeats.get(0);
         }
         if (winSeats.size() > 1) {
             maUser = loseSeats.get(0);
+            zhongMa = MahjongUtil.GetLuckMa(loseSeats.get(0), maSeat, count, ma).size();
         }
-        if (0 != maUser) {
-            for (Seat seat : seats) {
-                if (maUser == seat.getUserId()) {
-                    //本家
-                    if (seat.getSeatNo() == maSeat) {
-                        for (Integer ma : ma) {
-                            if (1 == Card.containSize(Card.ma_my(), ma)) {
-                                zhongMa++;
-                            }
-                        }
-                    }
-                    //下家
-                    if (seat.getSeatNo() - 1 == maSeat || seat.getSeatNo() + 3 == maSeat) {
-                        for (Integer ma : ma) {
-                            if (1 == Card.containSize(Card.ma_next(), ma)) {
-                                zhongMa++;
-                            }
-                        }
-                    }
-                    //对家
-                    if (seat.getSeatNo() - 2 == maSeat || seat.getSeatNo() + 2 == maSeat) {
-                        for (Integer ma : ma) {
-                            if (1 == Card.containSize(Card.ma_my(), ma)) {
-                                zhongMa++;
-                            }
-                        }
-                    }
-                    //上家
-                    if (seat.getSeatNo() - 3 == maSeat || seat.getSeatNo() + 1 == maSeat) {
-                        for (Integer ma : ma) {
-                            if (1 == Card.containSize(Card.ma_my(), ma)) {
-                                zhongMa++;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+
+//        if (0 != maUser) {
+//            for (Seat seat : seats) {
+//                if (maUser == seat.getUserId()) {
+//                    //本家
+//                    if (seat.getSeatNo() == maSeat) {
+//                        for (Integer ma : ma) {
+//                            if (1 == Card.containSize(Card.ma_my(), ma)) {
+//                                zhongMa++;
+//                            }
+//                        }
+//                    }
+//                    //下家
+//                    if (seat.getSeatNo() - 1 == maSeat || seat.getSeatNo() + 3 == maSeat) {
+//                        for (Integer ma : ma) {
+//                            if (1 == Card.containSize(Card.ma_next(), ma)) {
+//                                zhongMa++;
+//                            }
+//                        }
+//                    }
+//                    //对家
+//                    if (seat.getSeatNo() - 2 == maSeat || seat.getSeatNo() + 2 == maSeat) {
+//                        for (Integer ma : ma) {
+//                            if (1 == Card.containSize(Card.ma_my(), ma)) {
+//                                zhongMa++;
+//                            }
+//                        }
+//                    }
+//                    //上家
+//                    if (seat.getSeatNo() - 3 == maSeat || seat.getSeatNo() + 1 == maSeat) {
+//                        for (Integer ma : ma) {
+//                            if (1 == Card.containSize(Card.ma_my(), ma)) {
+//                                zhongMa++;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
         if (winSeats.size() == 1) {
             for (Integer loseSeat : loseSeats) {
@@ -706,93 +688,13 @@ public class Room {
             roomOver(response, redisService);
         } else {
             if (redisService.exists("room_match" + roomNo)) {
-                new ReadyTimeout(Integer.valueOf(roomNo), redisService).start();
+                new ReadyTimeout(Integer.valueOf(roomNo), redisService, gameCount).start();
             }
         }
     }
 
     public void roomOver(GameBase.BaseConnection.Builder response, RedisService redisService) {
-        if (0 == gameStatus.compareTo(GameStatus.WAITING)) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("flowType", 1);
-            if (8 == gameTimes) {
-                jsonObject.put("money", 1);
-            } else {
-                jsonObject.put("money", 2);
-            }
-            jsonObject.put("description", "开房间退回" + roomNo);
-            jsonObject.put("userId", roomOwner);
-            ApiResponse moneyDetail = JSON.parseObject(HttpUtil.urlConnectionByRsa(Constant.apiUrl + Constant.moneyDetailedCreate, jsonObject.toJSONString()), new TypeReference<ApiResponse<User>>() {
-            });
-            if (0 != moneyDetail.getCode()) {
-                LoggerFactory.getLogger(this.getClass()).error(Constant.apiUrl + Constant.moneyDetailedCreate + "?" + jsonObject.toJSONString());
-            }
-        }
-        Mahjong.MahjongOverResponse.Builder over = Mahjong.MahjongOverResponse.newBuilder();
-
-        for (Seat seat : seats) {
-            Mahjong.MahjongSeatGameOver.Builder seatGameOver = Mahjong.MahjongSeatGameOver.newBuilder()
-                    .setID(seat.getUserId()).setMinggang(seat.getMinggang()).setAngang(seat.getAngang())
-                    .setZimoCount(seat.getZimoCount()).setHuCount(seat.getHuCount())
-                    .setDianpaoCount(seat.getDianpaoCount()).setWinOrLose(seat.getScore());
-            over.addGameOver(seatGameOver);
-        }
-
-        StringBuilder people = new StringBuilder();
-
-        for (Seat seat : seats) {
-            people.append(",").append(seat.getUserId());
-            redisService.delete("reconnect" + seat.getUserId());
-            if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
-                String uuid = UUID.randomUUID().toString().replace("-", "");
-                while (redisService.exists(uuid)) {
-                    uuid = UUID.randomUUID().toString().replace("-", "");
-                }
-                redisService.addCache("backkey" + uuid, seat.getUserId() + "", 1800);
-                over.setBackKey(uuid);
-                over.setDateTime(new Date().getTime());
-                response.setOperationType(GameBase.OperationType.OVER).setData(over.build().toByteString());
-                MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
-            }
-        }
-
         JSONObject jsonObject = new JSONObject();
-        if (0 != recordList.size()) {
-            List<TotalScore> totalScores = new ArrayList<>();
-            for (Seat seat : seats) {
-                TotalScore totalScore = new TotalScore();
-                totalScore.setHead(seat.getHead());
-                totalScore.setNickname(seat.getNickname());
-                totalScore.setUserId(seat.getUserId());
-                totalScore.setScore(seat.getScore());
-                totalScores.add(totalScore);
-            }
-            SerializerFeature[] features = new SerializerFeature[]{SerializerFeature.WriteNullListAsEmpty,
-                    SerializerFeature.WriteMapNullValue, SerializerFeature.DisableCircularReferenceDetect,
-                    SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero,
-                    SerializerFeature.WriteNullBooleanAsFalse};
-            int feature = SerializerFeature.config(JSON.DEFAULT_GENERATE_FEATURE, SerializerFeature.WriteEnumUsingName, false);
-            jsonObject.put("gameType", 0);
-            jsonObject.put("roomOwner", roomOwner);
-            jsonObject.put("people", people.toString().substring(1));
-            jsonObject.put("gameTotal", gameTimes);
-            jsonObject.put("gameCount", gameCount);
-            jsonObject.put("peopleCount", count);
-            jsonObject.put("roomNo", Integer.parseInt(roomNo));
-            JSONObject gameRule = new JSONObject();
-            gameRule.put("ghost", ghost);
-            gameRule.put("gameRule", gameRule);
-            gameRule.put("initMaCount", initMaCount);
-            jsonObject.put("gameRule", gameRule.toJSONString());
-            jsonObject.put("gameData", JSON.toJSONString(recordList, feature, features).getBytes());
-            jsonObject.put("scoreData", JSON.toJSONString(totalScores, feature, features).getBytes());
-
-            ApiResponse apiResponse = JSON.parseObject(HttpUtil.urlConnectionByRsa(Constant.apiUrl + Constant.gamerecordCreateUrl, jsonObject.toJSONString()), ApiResponse.class);
-            if (0 != apiResponse.getCode()) {
-                LoggerFactory.getLogger(this.getClass()).error(Constant.apiUrl + Constant.gamerecordCreateUrl + "?" + jsonObject.toJSONString());
-            }
-        }
-
         //是否竞技场
         if (redisService.exists("room_match" + roomNo)) {
             String matchNo = redisService.getCache("room_match" + roomNo);
@@ -800,6 +702,7 @@ public class Room {
             if (redisService.exists("match_info" + matchNo)) {
                 while (!redisService.lock("lock_match_info" + matchNo)) {
                 }
+                GameBase.MatchResult.Builder matchResult = GameBase.MatchResult.newBuilder();
                 MatchInfo matchInfo = JSON.parseObject(redisService.getCache("match_info" + matchNo), MatchInfo.class);
                 Arena arena = matchInfo.getArena();
 
@@ -821,6 +724,7 @@ public class Room {
                 //在比赛中的人 重置分数
                 List<MatchUser> matchUsers = matchInfo.getMatchUsers();
                 for (Seat seat : seats) {
+                    redisService.delete("reconnect" + seat.getUserId());
                     for (MatchUser matchUser : matchUsers) {
                         if (seat.getUserId() == matchUser.getUserId()) {
                             matchUser.setScore(seat.getScore());
@@ -840,6 +744,7 @@ public class Room {
                         seatResponse.setHead(seat.getHead());
                         seatResponse.setSex(seat.isSex());
                         seatResponse.setOffline(false);
+                        seatResponse.setIsRobot(seat.isRobot());
                         roomSeatsInfo.addSeats(seatResponse.build());
                         MahjongTcpService.userClients.get(seat.getUserId()).send(response.setOperationType(GameBase.OperationType.SEAT_INFO).setData(roomSeatsInfo.build().toByteString()).build(), seat.getUserId());
                     }
@@ -851,11 +756,9 @@ public class Room {
                     userIdScore.put(matchUser.getUserId(), matchUser.getScore());
                 }
 
-                GameBase.MatchData.Builder matchData = GameBase.MatchData.newBuilder().setStartDate(matchInfo.getStartDate().getTime());
+                GameBase.MatchData.Builder matchData = GameBase.MatchData.newBuilder();
                 switch (matchInfo.getStatus()) {
                     case 1:
-                        //TODO 少一个0，记得加回来
-                        int addScoreCount = (int) ((new Date().getTime() - matchInfo.getStartDate().getTime()) / 12000);
 
                         //根据金币排序
                         seats.sort(new Comparator<Seat>() {
@@ -871,15 +774,26 @@ public class Room {
                         for (Seat seat : seats) {
                             for (MatchUser matchUser : matchUsers) {
                                 if (matchUser.getUserId() == seat.getUserId()) {
-                                    if (seat.getScore() < 500 + (addScoreCount * 100) && matchUsers.size() > arena.getCount() / 2) {
+                                    if (seat.getScore() < matchInfo.getMatchEliminateScore() && matchUsers.size() > arena.getCount() / 2) {
                                         matchUsers.remove(matchUser);
-                                        response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(GameBase.MatchResult.newBuilder()
+
+                                        matchResult.setResult(3);
+                                        response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(matchResult.build().toByteString());
+                                        if (MahjongTcpService.userClients.containsKey(matchUser.getUserId())) {
+                                            MahjongTcpService.userClients.get(matchUser.getUserId()).send(response.build(), matchUser.getUserId());
+                                        }
+                                        response.setOperationType(GameBase.OperationType.MATCH_OVER).setData(GameBase.MatchOver.newBuilder()
                                                 .setRanking(matchUsers.size()).build().toByteString());
                                         if (MahjongTcpService.userClients.containsKey(matchUser.getUserId())) {
                                             MahjongTcpService.userClients.get(matchUser.getUserId()).send(response.build(), matchUser.getUserId());
                                         }
                                         redisService.delete("reconnect" + seat.getUserId());
                                     } else {
+                                        matchResult.setResult(2);
+                                        response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(matchResult.build().toByteString());
+                                        if (MahjongTcpService.userClients.containsKey(matchUser.getUserId())) {
+                                            MahjongTcpService.userClients.get(matchUser.getUserId()).send(response.build(), matchUser.getUserId());
+                                        }
                                         thisWait.add(matchUser);
                                         redisService.addCache("reconnect" + seat.getUserId(), "sangong," + matchNo);
                                     }
@@ -938,6 +852,11 @@ public class Room {
                     case 2:
                     case 3:
                         for (Seat seat : seats) {
+                            matchResult.setResult(2);
+                            response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(matchResult.build().toByteString());
+                            if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
+                                MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
+                            }
                             redisService.addCache("reconnect" + seat.getUserId(), "sangong," + matchNo);
                         }
                         if (0 == rooms.size()) {
@@ -965,6 +884,11 @@ public class Room {
                         break;
                     case 4:
                         for (Seat seat : seats) {
+                            matchResult.setResult(2);
+                            response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(matchResult.build().toByteString());
+                            if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
+                                MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
+                            }
                             MatchUser matchUser = new MatchUser();
                             matchUser.setUserId(seat.getUserId());
                             matchUser.setScore(seat.getScore());
@@ -981,7 +905,7 @@ public class Room {
                         while (waitUsers.size() > 4) {
                             MatchUser matchUser = waitUsers.remove(waitUsers.size() - 1);
 
-                            response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(GameBase.MatchResult.newBuilder()
+                            response.setOperationType(GameBase.OperationType.MATCH_OVER).setData(GameBase.MatchOver.newBuilder()
                                     .setRanking(matchUsers.size()).build().toByteString());
                             if (MahjongTcpService.userClients.containsKey(matchUser.getUserId())) {
                                 MahjongTcpService.userClients.get(matchUser.getUserId()).send(response.build(), matchUser.getUserId());
@@ -1024,7 +948,12 @@ public class Room {
                             }
                         });
                         for (int i = 0; i < matchUsers.size(); i++) {
-                            response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(GameBase.MatchResult.newBuilder().setRanking(i + 1).build().toByteString());
+                            matchResult.setResult(i == 0 ? 1 : 3);
+                            response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(matchResult.build().toByteString());
+                            if (MahjongTcpService.userClients.containsKey(matchUsers.get(i).getUserId())) {
+                                MahjongTcpService.userClients.get(matchUsers.get(i).getUserId()).send(response.build(), matchUsers.get(i).getUserId());
+                            }
+                            response.setOperationType(GameBase.OperationType.MATCH_OVER).setData(GameBase.MatchOver.newBuilder().setRanking(i + 1).build().toByteString());
                             if (MahjongTcpService.userClients.containsKey(matchUsers.get(i).getUserId())) {
                                 MahjongTcpService.userClients.get(matchUsers.get(i).getUserId()).send(response.build(), matchUsers.get(i).getUserId());
                             }
@@ -1038,6 +967,91 @@ public class Room {
                     redisService.addCache("match_info" + matchNo, JSON.toJSONString(matchInfo));
                 }
                 redisService.unlock("lock_match_info" + matchNo);
+            }
+        } else {
+            if (0 == gameStatus.compareTo(GameStatus.WAITING)) {
+                jsonObject.clear();
+                jsonObject.put("flowType", 1);
+                if (8 == gameTimes) {
+                    jsonObject.put("money", 1);
+                } else {
+                    jsonObject.put("money", 2);
+                }
+                jsonObject.put("description", "开房间退回" + roomNo);
+                jsonObject.put("userId", roomOwner);
+                ApiResponse moneyDetail = JSON.parseObject(HttpUtil.urlConnectionByRsa(Constant.apiUrl + Constant.moneyDetailedCreate, jsonObject.toJSONString()), new TypeReference<ApiResponse<User>>() {
+                });
+                if (0 != moneyDetail.getCode()) {
+                    LoggerFactory.getLogger(this.getClass()).error(Constant.apiUrl + Constant.moneyDetailedCreate + "?" + jsonObject.toJSONString());
+                }
+            }
+
+            Mahjong.MahjongBalanceResponse.Builder balance = Mahjong.MahjongBalanceResponse.newBuilder();
+            for (Seat seat : seats) {
+                Mahjong.MahjongSeatGameBalance.Builder seatGameOver = Mahjong.MahjongSeatGameBalance.newBuilder()
+                        .setID(seat.getUserId()).setMinggang(seat.getMinggang()).setAngang(seat.getAngang())
+                        .setZimoCount(seat.getZimoCount()).setHuCount(seat.getHuCount())
+                        .setDianpaoCount(seat.getDianpaoCount()).setWinOrLose(seat.getScore());
+                balance.addGameBalance(seatGameOver);
+            }
+
+            StringBuilder people = new StringBuilder();
+
+            GameBase.OverResponse.Builder over = GameBase.OverResponse.newBuilder();
+            for (Seat seat : seats) {
+                people.append(",").append(seat.getUserId());
+                redisService.delete("reconnect" + seat.getUserId());
+                if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
+                    String uuid = UUID.randomUUID().toString().replace("-", "");
+                    while (redisService.exists(uuid)) {
+                        uuid = UUID.randomUUID().toString().replace("-", "");
+                    }
+                    redisService.addCache("backkey" + uuid, seat.getUserId() + "", 1800);
+                    over.setBackKey(uuid);
+                    over.setDateTime(new Date().getTime());
+
+                    response.setOperationType(GameBase.OperationType.BALANCE).setData(balance.build().toByteString());
+                    MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
+                    response.setOperationType(GameBase.OperationType.OVER).setData(over.build().toByteString());
+                    MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
+                }
+            }
+
+            if (0 != recordList.size()) {
+                List<TotalScore> totalScores = new ArrayList<>();
+                for (Seat seat : seats) {
+                    TotalScore totalScore = new TotalScore();
+                    totalScore.setHead(seat.getHead());
+                    totalScore.setNickname(seat.getNickname());
+                    totalScore.setUserId(seat.getUserId());
+                    totalScore.setScore(seat.getScore());
+                    totalScores.add(totalScore);
+                }
+                SerializerFeature[] features = new SerializerFeature[]{SerializerFeature.WriteNullListAsEmpty,
+                        SerializerFeature.WriteMapNullValue, SerializerFeature.DisableCircularReferenceDetect,
+                        SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullNumberAsZero,
+                        SerializerFeature.WriteNullBooleanAsFalse};
+                int feature = SerializerFeature.config(JSON.DEFAULT_GENERATE_FEATURE, SerializerFeature.WriteEnumUsingName, false);
+                jsonObject.clear();
+                jsonObject.put("gameType", 0);
+                jsonObject.put("roomOwner", roomOwner);
+                jsonObject.put("people", people.toString().substring(1));
+                jsonObject.put("gameTotal", gameTimes);
+                jsonObject.put("gameCount", gameCount);
+                jsonObject.put("peopleCount", count);
+                jsonObject.put("roomNo", Integer.parseInt(roomNo));
+                JSONObject gameRule = new JSONObject();
+                gameRule.put("ghost", ghost);
+                gameRule.put("gameRule", gameRules);
+                gameRule.put("initMaCount", initMaCount);
+                jsonObject.put("gameRule", gameRule.toJSONString());
+                jsonObject.put("gameData", JSON.toJSONString(recordList, feature, features).getBytes());
+                jsonObject.put("scoreData", JSON.toJSONString(totalScores, feature, features).getBytes());
+
+                ApiResponse apiResponse = JSON.parseObject(HttpUtil.urlConnectionByRsa(Constant.apiUrl + Constant.gamerecordCreateUrl, jsonObject.toJSONString()), ApiResponse.class);
+                if (0 != apiResponse.getCode()) {
+                    LoggerFactory.getLogger(this.getClass()).error(Constant.apiUrl + Constant.gamerecordCreateUrl + "?" + jsonObject.toJSONString());
+                }
             }
         }
 
@@ -1115,6 +1129,12 @@ public class Room {
                 .forEach(seat -> huSeat[0] = seat);
         //检查是自摸还是点炮,自摸输家是其它三家
         if (MahjongUtil.checkHu(huSeat[0].getCards(), gameRules, gui)) {
+            if (0 < historyList.size()) {
+                if (0 != historyList.get(historyList.size() - 1).getHistoryType().compareTo(OperationHistoryType.GET_CARD)
+                        || historyList.get(historyList.size() - 1).getUserId() != userId) {
+                    return;
+                }
+            }
             historyList.add(new OperationHistory(huSeat[0].getUserId(), OperationHistoryType.HU, huSeat[0].getCards().get(huSeat[0].getCards().size() - 1)));
             List<Integer> gangCards = new ArrayList<>();
             gangCards.addAll(huSeat[0].getAnGangCards());
@@ -1133,8 +1153,6 @@ public class Room {
                     scoreTypes.add(ScoreType.HAIDI);
                     score *= 2;
                 }
-                scoreTypes.add(ScoreType.ZIMO_HU);
-                score += 2;
             }
             if (banker == userId && 0 < continuityBanker) {
                 score *= 2;
@@ -1467,8 +1485,8 @@ public class Room {
                     //添加结算
                     List<ScoreType> scoreTypes = new ArrayList<>();
                     scoreTypes.add(ScoreType.DIAN_GANG);
-                    operationSeat.getMingGangResult().add(new GameResult(scoreTypes, card[0], -3));
-                    seat.getMingGangResult().add(new GameResult(scoreTypes, card[0], 3));
+                    operationSeat.getMingGangResult().add(new GameResult(scoreTypes, card[0], -count + 1));
+                    seat.getMingGangResult().add(new GameResult(scoreTypes, card[0], count - 1));
                     seat.setMinggang(seat.getMinggang() + 1);
                     historyList.add(new OperationHistory(userId, OperationHistoryType.DIAN_GANG, card[0]));
 
@@ -1520,7 +1538,7 @@ public class Room {
         int dice2 = new Random().nextInt(6) + 1;
         dice = new Integer[]{dice1, dice2};
         Mahjong.MahjongStartResponse.Builder dealCard = Mahjong.MahjongStartResponse.newBuilder();
-        dealCard.setBanker(banker).addDice(dice1).addDice(dice2);
+        dealCard.setBanker(banker).addDice(dice1).addDice(dice2).setRogue(fan == 0 ? gui : fan);
         dealCard.setSurplusCardsSize(surplusCards.size());
         response.setOperationType(GameBase.OperationType.START);
         for (Seat seat : seats) {
@@ -1613,6 +1631,7 @@ public class Room {
             seatResponse.setHead(seat1.getHead());
             seatResponse.setSex(seat1.isSex());
             seatResponse.setOffline(seat1.isRobot());
+            seatResponse.setIsRobot(seat1.isRobot());
             seatResponse.setIp(seat1.getIp());
             seatResponse.setGameCount(seat1.getGameCount());
             roomSeatsInfo.addSeats(seatResponse.build());

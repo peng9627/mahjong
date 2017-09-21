@@ -255,6 +255,9 @@ public class MahjongUtil {
 //        if (get_dui(cardList).size() == 14 && 1 == (gameRules >> 8) % 2) {//无鬼
         if (cardList.size() == 14 && 14 - get_dui(cardList).size() <= 2 * guiSize && 1 == (gameRules >> 8) % 2) {//有鬼
             List<Integer> si = get_si(cardList);
+            if (scoreTypes.contains(ScoreType.MENQING_HU)) {
+                scoreTypes.remove(ScoreType.MENQING_HU);
+            }
             switch (si.size() / 4) {
                 case 0:
                     scoreTypes.add(ScoreType.QIXIAODUI_HU);
@@ -297,12 +300,12 @@ public class MahjongUtil {
         }
 
         if (scoreTypes.contains(ScoreType.SHISANYAO_HU)) {
-            if (scoreTypes.contains(ScoreType.HUNYAOJIU_HU)) {
-                scoreTypes.remove(ScoreType.HUNYAOJIU_HU);
-            }
-            if (scoreTypes.contains(ScoreType.QUANYAOJIU_HU)) {
-                scoreTypes.remove(ScoreType.QUANYAOJIU_HU);
-            }
+            scoreTypes.clear();
+            scoreTypes.add(ScoreType.SHISANYAO_HU);
+        }
+        if (scoreTypes.contains(ScoreType.SHIBALUOHAN)) {
+            scoreTypes.clear();
+            scoreTypes.add(ScoreType.SHIBALUOHAN);
         }
 
         return scoreTypes;
@@ -328,21 +331,23 @@ public class MahjongUtil {
                     break;
                 case QINGYISE_HU:
                 case HUNYAOJIU_HU:
-                case HAOHUAQIXIAODUI_HU:
                     score += 8;
                     break;
-                case QUANYAOJIU_HU:
-                    score += 16;
+                case HAOHUAQIXIAODUI_HU:
+                    score += 12;
                     break;
+                case QUANYAOJIU_HU:
                 case SHUANGHAOHUAQIXIAODUI_HU:
                     score += 18;
                     break;
-                case SHISANYAO_HU:
                 case QUANFAN_HU:
                     score += 20;
                     break;
                 case SANHAOHUAQIXIAODUI_HU:
                     score += 24;
+                    break;
+                case SHISANYAO_HU:
+                    score += 26;
                     break;
                 case SHIBALUOHAN:
                     score += 36;
@@ -557,6 +562,31 @@ public class MahjongUtil {
                 handVals.remove(Integer.valueOf(md_val + 1));
                 handVals.remove(Integer.valueOf(md_val + 2));
                 return CheckLug(handVals);
+            }
+        }
+        return false;
+    }
+
+    public static List<Integer> GetLuckMa(int targetIdx, int bankerIdx, int playerCount, List<Integer> maVals) {
+        List<Integer> ret = new ArrayList<>();
+        int idx = targetIdx - bankerIdx;
+        if (idx < 0) idx += playerCount;
+        for (Integer ma : maVals) {
+            int mj_val = ma % 10;
+            int mj_color = ma / 10;
+            if ((mj_color < 3 && ((mj_val - 1) % playerCount == idx)) || (mj_color == 3 && LuckMaZi(idx, playerCount, ma, Card.getAllSameColor(3))) || (mj_color == 4 && LuckMaZi(idx, playerCount, ma, Card.getAllSameColor(4)))) {
+                ret.add(ma);
+            }
+        }
+        return ret;
+    }
+
+    static boolean LuckMaZi(int idx, int playerCount, int mjVal, List<Integer> zis) {
+        if (idx < zis.size()) {
+            for (int i = 0; i < zis.size(); i++) {
+                if (zis.get(i) == mjVal) {
+                    return (i % playerCount) == idx;
+                }
             }
         }
         return false;

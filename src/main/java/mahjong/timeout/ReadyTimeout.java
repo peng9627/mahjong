@@ -19,11 +19,13 @@ public class ReadyTimeout extends Thread {
     private Integer roomNo;
     private RedisService redisService;
     private GameBase.BaseConnection.Builder response;
+    private int gameCount;
 
-    public ReadyTimeout(Integer roomNo, RedisService redisService) {
+    public ReadyTimeout(Integer roomNo, RedisService redisService, int gameCount) {
         this.roomNo = roomNo;
         this.redisService = redisService;
         this.response = GameBase.BaseConnection.newBuilder();
+        this.gameCount = gameCount;
     }
 
     @Override
@@ -40,7 +42,8 @@ public class ReadyTimeout extends Thread {
             while (!redisService.lock("lock_room" + roomNo)) {
             }
             Room room = JSON.parseObject(redisService.getCache("room" + roomNo), Room.class);
-            if (0 == room.getGameStatus().compareTo(GameStatus.READYING) || 0 == room.getGameStatus().compareTo(GameStatus.WAITING)) {
+            if ((0 == room.getGameStatus().compareTo(GameStatus.READYING) || 0 == room.getGameStatus().compareTo(GameStatus.WAITING))
+                    && gameCount == room.getGameCount()) {
                 boolean hasNoReady = false;
                 for (Seat seat : room.getSeats()) {
                     if (!seat.isReady()) {

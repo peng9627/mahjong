@@ -1812,9 +1812,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public java.util.List<mahjong.mode.GameBase.OperationHistory> getHistoryList() {
@@ -1827,9 +1827,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public int getHistoryCount() {
@@ -1842,9 +1842,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public mahjong.mode.GameBase.OperationHistory getHistory(int index) {
@@ -1857,9 +1857,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public Builder setHistory(
@@ -1879,9 +1879,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public Builder setHistory(
@@ -1898,9 +1898,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public Builder addHistory(mahjong.mode.GameBase.OperationHistory value) {
@@ -1919,9 +1919,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public Builder addHistory(
@@ -1941,9 +1941,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public Builder addHistory(
@@ -1960,9 +1960,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public Builder addHistory(
@@ -1979,9 +1979,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public Builder addAllHistory(
@@ -1999,9 +1999,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public Builder clearHistory() {
@@ -2017,9 +2017,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public Builder removeHistory(int index) {
@@ -2035,9 +2035,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public mahjong.mode.GameBase.OperationHistory.Builder getHistoryBuilder(
@@ -2047,9 +2047,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public mahjong.mode.GameBase.OperationHistoryOrBuilder getHistoryOrBuilder(
@@ -2063,9 +2063,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public java.util.List<? extends mahjong.mode.GameBase.OperationHistoryOrBuilder>
@@ -2079,9 +2079,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public mahjong.mode.GameBase.OperationHistory.Builder addHistoryBuilder() {
@@ -2091,9 +2091,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public mahjong.mode.GameBase.OperationHistory.Builder addHistoryBuilder(
@@ -2104,9 +2104,9 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 操作记录
+             *操作记录
              * </pre>
-             * <p>
+             *
              * <code>repeated .OperationHistory history = 2;</code>
              */
             public java.util.List<mahjong.mode.GameBase.OperationHistory.Builder>
@@ -2236,41 +2236,39 @@ public final class Xingning {
                     return result_ == null ?
                             mahjong.mode.Mahjong.MahjongResultResponse.getDefaultInstance() : result_;
                 }
-            }
-
-            /**
-             * <code>.MahjongResultResponse result = 3;</code>
-             */
-            private com.google.protobuf.SingleFieldBuilderV3<
-                    mahjong.mode.Mahjong.MahjongResultResponse, mahjong.mode.Mahjong.MahjongResultResponse.Builder, mahjong.mode.Mahjong.MahjongResultResponseOrBuilder>
-            getResultFieldBuilder() {
-                if (resultBuilder_ == null) {
-                    resultBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
-                            mahjong.mode.Mahjong.MahjongResultResponse, mahjong.mode.Mahjong.MahjongResultResponse.Builder, mahjong.mode.Mahjong.MahjongResultResponseOrBuilder>(
-                            getResult(),
-                            getParentForChildren(),
-                            isClean());
-                    result_ = null;
-                }
-                return resultBuilder_;
-            }
-
-            public final Builder setUnknownFields(
-                    final com.google.protobuf.UnknownFieldSet unknownFields) {
-                return this;
-            }
-
-            public final Builder mergeUnknownFields(
-                    final com.google.protobuf.UnknownFieldSet unknownFields) {
-                return this;
-            }
-
-
-            // @@protoc_insertion_point(builder_scope:XingningMahjongReplayResponse)
+      }
+      /**
+       * <code>.MahjongResultResponse result = 3;</code>
+       */
+      private com.google.protobuf.SingleFieldBuilderV3<
+          mahjong.mode.Mahjong.MahjongResultResponse, mahjong.mode.Mahjong.MahjongResultResponse.Builder, mahjong.mode.Mahjong.MahjongResultResponseOrBuilder> 
+          getResultFieldBuilder() {
+        if (resultBuilder_ == null) {
+          resultBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              mahjong.mode.Mahjong.MahjongResultResponse, mahjong.mode.Mahjong.MahjongResultResponse.Builder, mahjong.mode.Mahjong.MahjongResultResponseOrBuilder>(
+                  getResult(),
+                  getParentForChildren(),
+                  isClean());
+          result_ = null;
         }
+        return resultBuilder_;
+      }
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
 
-        // @@protoc_insertion_point(class_scope:XingningMahjongReplayResponse)
-        private static final mahjong.mode.Xingning.XingningMahjongReplayResponse DEFAULT_INSTANCE;
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return this;
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:XingningMahjongReplayResponse)
+    }
+
+    // @@protoc_insertion_point(class_scope:XingningMahjongReplayResponse)
+    private static final mahjong.mode.Xingning.XingningMahjongReplayResponse DEFAULT_INSTANCE;
     static {
       DEFAULT_INSTANCE = new mahjong.mode.Xingning.XingningMahjongReplayResponse();
     }
