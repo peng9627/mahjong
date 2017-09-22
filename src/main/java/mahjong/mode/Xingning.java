@@ -2188,54 +2188,51 @@ public final class Xingning {
              */
             public Builder mergeResult(mahjong.mode.Mahjong.MahjongResultResponse value) {
                 if (resultBuilder_ == null) {
-                    if (result_ != null) {
-                        result_ =
-                                mahjong.mode.Mahjong.MahjongResultResponse.newBuilder(result_).mergeFrom(value).buildPartial();
-                    } else {
-                        result_ = value;
-                    }
-                    onChanged();
-                } else {
-                    resultBuilder_.mergeFrom(value);
-                }
+          if (result_ != null) {
+            result_ =
+              mahjong.mode.Mahjong.MahjongResultResponse.newBuilder(result_).mergeFrom(value).buildPartial();
+          } else {
+            result_ = value;
+          }
+          onChanged();
+        } else {
+          resultBuilder_.mergeFrom(value);
+        }
 
-                return this;
-            }
+        return this;
+      }
+      /**
+       * <code>.MahjongResultResponse result = 3;</code>
+       */
+      public Builder clearResult() {
+        if (resultBuilder_ == null) {
+          result_ = null;
+          onChanged();
+        } else {
+          result_ = null;
+          resultBuilder_ = null;
+        }
 
-            /**
-             * <code>.MahjongResultResponse result = 3;</code>
-             */
-            public Builder clearResult() {
-                if (resultBuilder_ == null) {
-                    result_ = null;
-                    onChanged();
-                } else {
-                    result_ = null;
-                    resultBuilder_ = null;
-                }
-
-                return this;
-            }
-
-            /**
-             * <code>.MahjongResultResponse result = 3;</code>
-             */
-            public mahjong.mode.Mahjong.MahjongResultResponse.Builder getResultBuilder() {
-
-                onChanged();
-                return getResultFieldBuilder().getBuilder();
-            }
-
-            /**
-             * <code>.MahjongResultResponse result = 3;</code>
-             */
-            public mahjong.mode.Mahjong.MahjongResultResponseOrBuilder getResultOrBuilder() {
-                if (resultBuilder_ != null) {
-                    return resultBuilder_.getMessageOrBuilder();
-                } else {
-                    return result_ == null ?
-                            mahjong.mode.Mahjong.MahjongResultResponse.getDefaultInstance() : result_;
-                }
+        return this;
+      }
+      /**
+       * <code>.MahjongResultResponse result = 3;</code>
+       */
+      public mahjong.mode.Mahjong.MahjongResultResponse.Builder getResultBuilder() {
+        
+        onChanged();
+        return getResultFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.MahjongResultResponse result = 3;</code>
+       */
+      public mahjong.mode.Mahjong.MahjongResultResponseOrBuilder getResultOrBuilder() {
+        if (resultBuilder_ != null) {
+          return resultBuilder_.getMessageOrBuilder();
+        } else {
+          return result_ == null ?
+              mahjong.mode.Mahjong.MahjongResultResponse.getDefaultInstance() : result_;
+        }
       }
       /**
        * <code>.MahjongResultResponse result = 3;</code>

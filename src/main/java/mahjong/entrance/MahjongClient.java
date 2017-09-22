@@ -214,6 +214,22 @@ public class MahjongClient {
                                 gameInfo.setGameCount(room.getGameCount());
                                 gameInfo.setGameTimes(room.getGameTimes());
                                 addSeat(room, gameInfo);
+
+                                int lastPlayedUser = 0;
+                                if (0 < room.getHistoryList().size()) {
+                                    for (int i = room.getHistoryList().size() - 1; i > -1; i--) {
+                                        OperationHistory operationHistory = room.getHistoryList().get(i);
+                                        if (0 == operationHistory.getHistoryType().compareTo(OperationHistoryType.PLAY_CARD)) {
+                                            lastPlayedUser = operationHistory.getUserId();
+                                            break;
+                                        }
+                                        if (0 == operationHistory.getHistoryType().compareTo(OperationHistoryType.PENG)
+                                                || 0 == operationHistory.getHistoryType().compareTo(OperationHistoryType.DIAN_GANG)) {
+                                            break;
+                                        }
+                                    }
+                                }
+                                gameInfo.setLastPlayedUser(lastPlayedUser);
                                 response.setOperationType(GameBase.OperationType.GAME_INFO).setData(gameInfo.build().toByteString());
                                 messageReceive.send(response.build(), userId);
 

@@ -201,7 +201,9 @@ public class MahjongUtil {
                 scoreTypes.add(ScoreType.PENGPENG_HU);
             } else {
                 //有鬼牌
-                Card.remove(temp, gui);
+                for (int i = 0; i < guiSize; i++) {
+                    Card.remove(temp, gui);
+                }
                 List<Integer> dui = get_dui(temp);
                 switch (guiSize) {
                     case 1:
@@ -253,7 +255,7 @@ public class MahjongUtil {
 
         //七对
 //        if (get_dui(cardList).size() == 14 && 1 == (gameRules >> 8) % 2) {//无鬼
-        if (cardList.size() == 14 && 14 - get_dui(cardList).size() <= 2 * guiSize && 1 == (gameRules >> 8) % 2) {//有鬼
+        if (cardList.size() == 14 && 14 - get_dui(cardList).size() - guiSize / 2 <= 2 * guiSize && 1 == (gameRules >> 8) % 2) {//有鬼
             List<Integer> si = get_si(cardList);
             if (scoreTypes.contains(ScoreType.MENQING_HU)) {
                 scoreTypes.remove(ScoreType.MENQING_HU);
@@ -354,6 +356,7 @@ public class MahjongUtil {
                     break;
             }
         }
+        score = score == 0 ? 2 : score;
         //十三幺不与其它牌型叠加
         if (scoreTypes.contains(ScoreType.SHISANYAO_HU) && score < 20) {
             score = 20;

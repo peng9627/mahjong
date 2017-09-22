@@ -65,6 +65,7 @@ public class OperationTimeout extends Thread {
                     room.getSeats().stream().filter(seat -> seat.getUserId() == userId).forEach(seat -> {
                         if (room.getOperationSeatNo() != seat.getSeatNo()) {
                             seat.setOperation(4);
+                            System.out.println("准备发送PASS" + userId);
                             if (MahjongTcpService.userClients.containsKey(userId)) {
                                 System.out.println("发送PASS" + userId);
                                 MahjongTcpService.userClients.get(userId).send(response.setOperationType(GameBase.OperationType.ACTION)
@@ -76,6 +77,7 @@ public class OperationTimeout extends Thread {
                                 room.pengOrGang(GameBase.BaseAction.newBuilder().setID(seat.getUserId()), response, redisService, userId);
                             }
                         } else {
+                            System.out.println("准备发送PASS" + userId);
                             if (MahjongTcpService.userClients.containsKey(userId)) {
                                 System.out.println("发送PASS" + userId);
                                 MahjongTcpService.userClients.get(userId).send(response.setOperationType(GameBase.OperationType.ACTION)
