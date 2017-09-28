@@ -174,21 +174,22 @@ public class MahjongUtil {
     public static List<ScoreType> getHuType(List<Integer> cards, List<Integer> pengCards, List<Integer> gangCard, int gameRules, int gui) {
         List<ScoreType> scoreTypes = new ArrayList<>();
 
-        cards.sort(new Comparator<Integer>() {
-            @Override
-            public int compare(Integer o1, Integer o2) {
-                return o1.compareTo(o2);
-            }
-        });
         //门清
         if (14 == cards.size() && 1 == (gameRules >> 1) % 2) {
             scoreTypes.add(ScoreType.MENQING_HU);
         }
         if (4 == gangCard.size() && 1 == (gameRules >> 7) % 2) {
             scoreTypes.add(ScoreType.SHIBALUOHAN);
+            return scoreTypes;
         }
         List<Integer> cardList = new ArrayList<>();
         cardList.addAll(cards);
+        cardList.sort(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o1.compareTo(o2);
+            }
+        });
 
         int guiSize = Card.containSize(cardList, gui);
         List<Integer> temp = new ArrayList<>();
@@ -232,7 +233,7 @@ public class MahjongUtil {
         }
 
         List<Integer> allCard = new ArrayList<>();
-        allCard.addAll(cards);
+        allCard.addAll(cardList);
         allCard.addAll(pengCards);
         allCard.addAll(gangCard);
 
@@ -255,12 +256,31 @@ public class MahjongUtil {
 
         //七对
 //        if (get_dui(cardList).size() == 14 && 1 == (gameRules >> 8) % 2) {//无鬼
-        if (cardList.size() == 14 && 14 - get_dui(cardList).size() - guiSize / 2 <= 2 * guiSize && 1 == (gameRules >> 8) % 2) {//有鬼
-            List<Integer> si = get_si(cardList);
+        if (cardList.size() == 14 && 14 - get_dui(temp).size() - guiSize <= 2 * guiSize && 1 == (gameRules >> 8) % 2 && 1 != gameRules % 2) {//有鬼
+            if (scoreTypes.contains(ScoreType.PENGPENG_HU)) {
+                scoreTypes.remove(ScoreType.PENGPENG_HU);
+            }
+            int size = guiSize;
+            int siCount = 0;
+            List<Integer> si = get_si(temp);
             if (scoreTypes.contains(ScoreType.MENQING_HU)) {
                 scoreTypes.remove(ScoreType.MENQING_HU);
             }
-            switch (si.size() / 4) {
+            List<Integer> temp1 = new ArrayList<>();
+            temp1.addAll(temp);
+            Card.removeAll(temp1, si);
+            siCount += si.size() / 4;
+
+            List<Integer> san = get_san(temp1);
+            Card.removeAll(temp1, san);
+            size -= san.size() / 3;
+            siCount += san.size() / 3;
+
+            Card.removeAll(temp1, get_dui(temp1));
+            size -= temp1.size();
+            siCount += size / 2;
+
+            switch (siCount) {
                 case 0:
                     scoreTypes.add(ScoreType.QIXIAODUI_HU);
                     break;
@@ -304,10 +324,6 @@ public class MahjongUtil {
         if (scoreTypes.contains(ScoreType.SHISANYAO_HU)) {
             scoreTypes.clear();
             scoreTypes.add(ScoreType.SHISANYAO_HU);
-        }
-        if (scoreTypes.contains(ScoreType.SHIBALUOHAN)) {
-            scoreTypes.clear();
-            scoreTypes.add(ScoreType.SHIBALUOHAN);
         }
 
         return scoreTypes;
@@ -356,7 +372,6 @@ public class MahjongUtil {
                     break;
             }
         }
-        score = score == 0 ? 2 : score;
         //十三幺不与其它牌型叠加
         if (scoreTypes.contains(ScoreType.SHISANYAO_HU) && score < 20) {
             score = 20;

@@ -1,6 +1,5 @@
 package mahjong.entrance;
 
-import com.google.protobuf.GeneratedMessageV3;
 import mahjong.mode.GameBase;
 import mahjong.redis.RedisService;
 import mahjong.timeout.MessageTimeout;
@@ -29,6 +28,7 @@ public class MessageReceive implements Runnable {
     private byte[] md5Key = "2704031cd4814eb2a82e47bd1d9042c6".getBytes();
     private MahjongClient client;
     public Date lastMessageDate;
+    public Integer roomNo;
 
     MessageReceive(Socket s, RedisService redisService) {
 

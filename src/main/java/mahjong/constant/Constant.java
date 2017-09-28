@@ -18,7 +18,7 @@ public class Constant {
     public static int dissolve = 180000;
     public static int messageTimeout = 300000;
     //TODO 少一个0
-    public static int matchEliminateScoreTimeout = 12000;
+    public static int matchEliminateScoreTimeout = 30000;
     public static int matchEliminateScore = 100;
 
 }

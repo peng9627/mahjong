@@ -65,7 +65,9 @@ public class PlayCardTimeout extends Thread {
                     }
                 }
             }
-            redisService.addCache("room" + roomNo, JSON.toJSONString(room));
+            if (null != room.getRoomNo()) {
+                redisService.addCache("room" + roomNo, JSON.toJSONString(room));
+            }
             redisService.unlock("lock_room" + roomNo);
         }
     }

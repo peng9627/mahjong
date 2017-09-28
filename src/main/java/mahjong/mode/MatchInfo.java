@@ -83,26 +83,36 @@ public class MatchInfo {
         Room room = new Room();
         room.setBaseScore(1);
         room.setRoomNo(roomNo(redisService));
-        //TODO 测试，要改回去
-        room.setGameTimes(1);
+        room.setGameTimes(gameTimes);
         room.setCount(4);
         room.setGhost(1);
         room.setGameRules(16382);
         room.setGameStatus(GameStatus.WAITING);
         room.setSeatNos(new ArrayList<>(Arrays.asList(1, 2, 3, 4)));
         room.setBanker(users.get(0).getUserId());
+        GameBase.MatchResult.Builder matchResult = GameBase.MatchResult.newBuilder();
         while (4 > room.getSeats().size()) {
             User user = users.remove(0);
             room.addSeat(user, userIdScore.get(user.getUserId()));
-            response.setOperationType(GameBase.OperationType.MATCH_DATA).setData(matchData.build().toByteString());
+            matchResult.setResult(1).setTotalScore(userIdScore.get(user.getUserId())).setCurrentScore(-1);
+            response.setOperationType(GameBase.OperationType.MATCH_RESULT).setData(matchResult.build().toByteString());
             if (MahjongTcpService.userClients.containsKey(user.getUserId())) {
                 MahjongTcpService.userClients.get(user.getUserId()).send(response.build(), user.getUserId());
+                room.sendRoomInfo(GameBase.RoomCardIntoResponse.newBuilder(), response, user.getUserId());
             }
-            room.sendRoomInfo(GameBase.RoomCardIntoResponse.newBuilder(), response, user.getUserId());
             redisService.addCache("room_match" + room.getRoomNo(), matchNo);
-            redisService.addCache("reconnect" + user.getUserId(), "run_quickly," + room.getRoomNo());
+            redisService.addCache("reconnect" + user.getUserId(), "xingning_mahjong," + room.getRoomNo());
         }
         room.sendSeatInfo(response);
+
+        for (Seat seat : room.getSeats()) {
+            if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
+                MahjongTcpService.userClients.get(seat.getUserId()).roomNo = Integer.valueOf(room.getRoomNo());
+                response.setOperationType(GameBase.OperationType.MATCH_DATA).setData(matchData.build().toByteString());
+                MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
+            }
+        }
+
         new ReadyTimeout(Integer.parseInt(room.getRoomNo()), redisService, room.getGameCount()).start();
         redisService.addCache("room" + room.getRoomNo(), JSON.toJSONString(room));
         return Integer.parseInt(room.getRoomNo());

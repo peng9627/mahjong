@@ -36,6 +36,7 @@ public class RedisClientTemplate {
      * @return 结果
      */
     public String set(String key, String value, int timeout) {
+        log.info("redis 添加" + key);
         String result = null;
         ShardedJedis shardedJedis = shardedJedisPool.getResource();
 
