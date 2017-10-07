@@ -174,6 +174,10 @@ public class MahjongUtil {
     public static List<ScoreType> getHuType(List<Integer> cards, List<Integer> pengCards, List<Integer> gangCard, int gameRules, int gui) {
         List<ScoreType> scoreTypes = new ArrayList<>();
 
+        if (1 == gameRules % 2) {
+            return scoreTypes;
+        }
+
         //门清
         if (14 == cards.size() && 1 == (gameRules >> 1) % 2) {
             scoreTypes.add(ScoreType.MENQING_HU);

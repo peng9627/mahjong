@@ -41,7 +41,7 @@ public final class Xingning {
 
         /**
          * <pre>
-         * 游戏规则  低位到高位到顺序（鸡胡，门清，天地和，幺九，全番，十三幺，对对胡，十八罗汉，七小对，清一色，混一色，海底捞，杠爆全包，庄硬）
+         * 游戏规则  低位到高位到顺序（鸡胡，门清，天地和，幺九，全番，十三幺，对对胡，十八罗汉，七小对，清一色，混一色，海底捞，杠爆全包，庄硬，无鬼加倍）
          * </pre>
          * <p>
          * <code>uint32 gameRules = 3;</code>
@@ -50,7 +50,7 @@ public final class Xingning {
 
         /**
          * <pre>
-         * 1.红中做鬼，2.无鬼，3.翻鬼，4.无鬼加倍
+         * 1.红中做鬼，2.无鬼，3.翻鬼
          * </pre>
          * <p>
          * <code>uint32 ghost = 4;</code>
@@ -214,7 +214,7 @@ public final class Xingning {
 
         /**
          * <pre>
-         * 游戏规则  低位到高位到顺序（鸡胡，门清，天地和，幺九，全番，十三幺，对对胡，十八罗汉，七小对，清一色，混一色，海底捞，杠爆全包，庄硬）
+         * 游戏规则  低位到高位到顺序（鸡胡，门清，天地和，幺九，全番，十三幺，对对胡，十八罗汉，七小对，清一色，混一色，海底捞，杠爆全包，庄硬，无鬼加倍）
          * </pre>
          * <p>
          * <code>uint32 gameRules = 3;</code>
@@ -228,7 +228,7 @@ public final class Xingning {
 
         /**
          * <pre>
-         * 1.红中做鬼，2.无鬼，3.翻鬼，4.无鬼加倍
+         * 1.红中做鬼，2.无鬼，3.翻鬼
          * </pre>
          * <p>
          * <code>uint32 ghost = 4;</code>
@@ -747,7 +747,7 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 游戏规则  低位到高位到顺序（鸡胡，门清，天地和，幺九，全番，十三幺，对对胡，十八罗汉，七小对，清一色，混一色，海底捞，杠爆全包，庄硬）
+             * 游戏规则  低位到高位到顺序（鸡胡，门清，天地和，幺九，全番，十三幺，对对胡，十八罗汉，七小对，清一色，混一色，海底捞，杠爆全包，庄硬，无鬼加倍）
              * </pre>
              * <p>
              * <code>uint32 gameRules = 3;</code>
@@ -758,7 +758,7 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 游戏规则  低位到高位到顺序（鸡胡，门清，天地和，幺九，全番，十三幺，对对胡，十八罗汉，七小对，清一色，混一色，海底捞，杠爆全包，庄硬）
+             * 游戏规则  低位到高位到顺序（鸡胡，门清，天地和，幺九，全番，十三幺，对对胡，十八罗汉，七小对，清一色，混一色，海底捞，杠爆全包，庄硬，无鬼加倍）
              * </pre>
              * <p>
              * <code>uint32 gameRules = 3;</code>
@@ -772,7 +772,7 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 游戏规则  低位到高位到顺序（鸡胡，门清，天地和，幺九，全番，十三幺，对对胡，十八罗汉，七小对，清一色，混一色，海底捞，杠爆全包，庄硬）
+             * 游戏规则  低位到高位到顺序（鸡胡，门清，天地和，幺九，全番，十三幺，对对胡，十八罗汉，七小对，清一色，混一色，海底捞，杠爆全包，庄硬，无鬼加倍）
              * </pre>
              * <p>
              * <code>uint32 gameRules = 3;</code>
@@ -788,7 +788,7 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 1.红中做鬼，2.无鬼，3.翻鬼，4.无鬼加倍
+             * 1.红中做鬼，2.无鬼，3.翻鬼
              * </pre>
              * <p>
              * <code>uint32 ghost = 4;</code>
@@ -799,7 +799,7 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 1.红中做鬼，2.无鬼，3.翻鬼，4.无鬼加倍
+             * 1.红中做鬼，2.无鬼，3.翻鬼
              * </pre>
              * <p>
              * <code>uint32 ghost = 4;</code>
@@ -813,7 +813,7 @@ public final class Xingning {
 
             /**
              * <pre>
-             * 1.红中做鬼，2.无鬼，3.翻鬼，4.无鬼加倍
+             * 1.红中做鬼，2.无鬼，3.翻鬼
              * </pre>
              * <p>
              * <code>uint32 ghost = 4;</code>
@@ -2115,35 +2115,33 @@ public final class Xingning {
             }
 
             private com.google.protobuf.RepeatedFieldBuilderV3<
-                    mahjong.mode.GameBase.OperationHistory, mahjong.mode.GameBase.OperationHistory.Builder, mahjong.mode.GameBase.OperationHistoryOrBuilder>
-            getHistoryFieldBuilder() {
-                if (historyBuilder_ == null) {
-                    historyBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-                            mahjong.mode.GameBase.OperationHistory, mahjong.mode.GameBase.OperationHistory.Builder, mahjong.mode.GameBase.OperationHistoryOrBuilder>(
-                            history_,
-                            ((bitField0_ & 0x00000002) == 0x00000002),
-                            getParentForChildren(),
-                            isClean());
-                    history_ = null;
-                }
-                return historyBuilder_;
-            }
+          mahjong.mode.GameBase.OperationHistory, mahjong.mode.GameBase.OperationHistory.Builder, mahjong.mode.GameBase.OperationHistoryOrBuilder> 
+          getHistoryFieldBuilder() {
+        if (historyBuilder_ == null) {
+          historyBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              mahjong.mode.GameBase.OperationHistory, mahjong.mode.GameBase.OperationHistory.Builder, mahjong.mode.GameBase.OperationHistoryOrBuilder>(
+                  history_,
+                  ((bitField0_ & 0x00000002) == 0x00000002),
+                  getParentForChildren(),
+                  isClean());
+          history_ = null;
+        }
+        return historyBuilder_;
+      }
 
-            private mahjong.mode.Mahjong.MahjongResultResponse result_ = null;
-            private com.google.protobuf.SingleFieldBuilderV3<
-                    mahjong.mode.Mahjong.MahjongResultResponse, mahjong.mode.Mahjong.MahjongResultResponse.Builder, mahjong.mode.Mahjong.MahjongResultResponseOrBuilder> resultBuilder_;
-
-            /**
-             * <code>.MahjongResultResponse result = 3;</code>
-             */
-            public boolean hasResult() {
-                return resultBuilder_ != null || result_ != null;
-            }
-
-            /**
-             * <code>.MahjongResultResponse result = 3;</code>
-             */
-            public mahjong.mode.Mahjong.MahjongResultResponse getResult() {
+      private mahjong.mode.Mahjong.MahjongResultResponse result_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          mahjong.mode.Mahjong.MahjongResultResponse, mahjong.mode.Mahjong.MahjongResultResponse.Builder, mahjong.mode.Mahjong.MahjongResultResponseOrBuilder> resultBuilder_;
+      /**
+       * <code>.MahjongResultResponse result = 3;</code>
+       */
+      public boolean hasResult() {
+        return resultBuilder_ != null || result_ != null;
+      }
+      /**
+       * <code>.MahjongResultResponse result = 3;</code>
+       */
+      public mahjong.mode.Mahjong.MahjongResultResponse getResult() {
         if (resultBuilder_ == null) {
           return result_ == null ? mahjong.mode.Mahjong.MahjongResultResponse.getDefaultInstance() : result_;
         } else {

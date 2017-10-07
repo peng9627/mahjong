@@ -243,7 +243,7 @@ public class MahjongClient {
                                 //才开始的时候检测是否该当前玩家出牌
                                 if (0 == room.getHistoryList().size()) {
                                     for (Seat seat : room.getSeats()) {
-                                        if (seat.getSeatNo() == room.getOperationSeatNo() && seat.getUserId() == userId) {
+                                        if (seat.getSeatNo() == room.getOperationSeatNo() && seat.getUserId() == userId && 0 == room.getGameStatus().compareTo(GameStatus.PLAYING)) {
                                             room.checkSelfGetCard(response, operationSeat, redisService);
                                             break;
                                         }
@@ -429,7 +429,7 @@ public class MahjongClient {
                                     }
                                 }
                                 Mahjong.MahjongGang gangRequest = Mahjong.MahjongGang.parseFrom(actionRequest.getData());
-                                room.selfGang(actionResponse, gangRequest.getCard(), response, redisService, userId);
+                                room.selfGang(actionResponse, gangRequest.getCardList(), response, redisService, userId);
                                 break;
                             case DIAN_GANG:
                                 if (0 < room.getHistoryList().size()) {
