@@ -2070,51 +2070,47 @@ public final class Xingning {
              */
             public java.util.List<? extends mahjong.mode.GameBase.OperationHistoryOrBuilder>
             getHistoryOrBuilderList() {
-                if (historyBuilder_ != null) {
-                    return historyBuilder_.getMessageOrBuilderList();
-                } else {
-                    return java.util.Collections.unmodifiableList(history_);
-                }
-            }
-
-            /**
-             * <pre>
-             *操作记录
-             * </pre>
-             *
-             * <code>repeated .OperationHistory history = 2;</code>
-             */
-            public mahjong.mode.GameBase.OperationHistory.Builder addHistoryBuilder() {
-                return getHistoryFieldBuilder().addBuilder(
-                        mahjong.mode.GameBase.OperationHistory.getDefaultInstance());
-            }
-
-            /**
-             * <pre>
-             *操作记录
-             * </pre>
-             *
-             * <code>repeated .OperationHistory history = 2;</code>
-             */
-            public mahjong.mode.GameBase.OperationHistory.Builder addHistoryBuilder(
-                    int index) {
-                return getHistoryFieldBuilder().addBuilder(
-                        index, mahjong.mode.GameBase.OperationHistory.getDefaultInstance());
-            }
-
-            /**
-             * <pre>
-             *操作记录
-             * </pre>
-             *
-             * <code>repeated .OperationHistory history = 2;</code>
-             */
-            public java.util.List<mahjong.mode.GameBase.OperationHistory.Builder>
-            getHistoryBuilderList() {
-                return getHistoryFieldBuilder().getBuilderList();
-            }
-
-            private com.google.protobuf.RepeatedFieldBuilderV3<
+        if (historyBuilder_ != null) {
+          return historyBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(history_);
+        }
+      }
+      /**
+       * <pre>
+       *操作记录
+       * </pre>
+       *
+       * <code>repeated .OperationHistory history = 2;</code>
+       */
+      public mahjong.mode.GameBase.OperationHistory.Builder addHistoryBuilder() {
+        return getHistoryFieldBuilder().addBuilder(
+            mahjong.mode.GameBase.OperationHistory.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       *操作记录
+       * </pre>
+       *
+       * <code>repeated .OperationHistory history = 2;</code>
+       */
+      public mahjong.mode.GameBase.OperationHistory.Builder addHistoryBuilder(
+          int index) {
+        return getHistoryFieldBuilder().addBuilder(
+            index, mahjong.mode.GameBase.OperationHistory.getDefaultInstance());
+      }
+      /**
+       * <pre>
+       *操作记录
+       * </pre>
+       *
+       * <code>repeated .OperationHistory history = 2;</code>
+       */
+      public java.util.List<mahjong.mode.GameBase.OperationHistory.Builder> 
+           getHistoryBuilderList() {
+        return getHistoryFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
           mahjong.mode.GameBase.OperationHistory, mahjong.mode.GameBase.OperationHistory.Builder, mahjong.mode.GameBase.OperationHistoryOrBuilder> 
           getHistoryFieldBuilder() {
         if (historyBuilder_ == null) {
