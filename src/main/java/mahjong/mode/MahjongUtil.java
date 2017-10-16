@@ -182,7 +182,7 @@ public class MahjongUtil {
         if (14 == cards.size() && 1 == (gameRules >> 1) % 2) {
             scoreTypes.add(ScoreType.MENQING_HU);
         }
-        if (4 == gangCard.size() && 1 == (gameRules >> 7) % 2) {
+        if (16 == gangCard.size() && 1 == (gameRules >> 7) % 2) {
             scoreTypes.add(ScoreType.SHIBALUOHAN);
             return scoreTypes;
         }

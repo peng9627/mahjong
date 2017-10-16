@@ -242,7 +242,7 @@ public class Room {
         seat.setAreaString(user.getArea());
         seat.setHead(user.getHead());
         seat.setNickname(user.getNickname());
-        seat.setSex(user.getSex().equals("MAN"));
+        seat.setSex(user.getSex().equals("1"));
         seat.setScore(score);
         seat.setIp(user.getLastLoginIp());
         seat.setGameCount(user.getGameCount());
@@ -260,14 +260,8 @@ public class Room {
             seat.setReady(false);
             List<Integer> cardList = new ArrayList<>();
             int cardIndex;
-//            if (seat.getSeatNo() == 1) {
-//                cardIndex = new Random().nextInt(3);
-//            } else {
-//                cardIndex = (int) (Math.random() * surplusCards.size());
-//            }
             for (int i = 0; i < 13; i++) {
                 cardIndex = (int) (Math.random() * surplusCards.size());
-//                cardIndex = new Random().nextInt(40);
                 cardList.add(surplusCards.get(cardIndex));
                 surplusCards.remove(cardIndex);
             }
@@ -336,10 +330,12 @@ public class Room {
         return next;
     }
 
-    private void clear() {
+    private void clear(Map<Integer, Integer> huCard, Map<Integer, Integer> maScore) {
         Record record = new Record();
         record.setDice(dice);
         record.setBanker(banker);
+        record.setStartDate(startDate);
+        record.setGameCount(gameCount);
         List<SeatRecord> seatRecords = new ArrayList<>();
         seats.forEach(seat -> {
             SeatRecord seatRecord = new SeatRecord();
@@ -351,11 +347,26 @@ public class Room {
             seatRecord.getAnGangResult().addAll(seat.getAnGangResult());
             seatRecord.getInitialCards().addAll(seat.getInitialCards());
             seatRecord.getCards().addAll(seat.getCards());
+            seatRecord.getPengCards().addAll(seat.getPengCards());
+            seatRecord.getChiCards().addAll(seat.getChiCards());
+            seatRecord.getAnGangCards().addAll(seat.getAnGangCards());
+            seatRecord.getMingGangCards().addAll(seat.getMingGangCards());
+            seatRecord.setScore(seat.getScore());
+            seatRecord.setSex(seat.isSex());
+            seatRecord.setIp(seat.getIp());
+            seatRecord.setSeatNo(seat.getSeatNo());
+            seatRecord.setGameCount(gameCount);
+            if (null != huCard && huCard.containsKey(seatRecord.getUserId())) {
+                seatRecord.setHuCard(huCard.get(seatRecord.getUserId()));
+            }
             final int[] winOrLose = {0};
             seat.getMingGangResult().forEach(gameResult -> winOrLose[0] += gameResult.getScore());
             seat.getAnGangResult().forEach(gameResult -> winOrLose[0] += gameResult.getScore());
             if (null != seat.getCardResult()) {
                 winOrLose[0] += seat.getCardResult().getScore();
+            }
+            if (maScore.containsKey(seat.getUserId())) {
+                winOrLose[0] += maScore.get(seat.getUserId());
             }
             seatRecord.setWinOrLose(winOrLose[0]);
             seatRecords.add(seatRecord);
@@ -388,8 +399,8 @@ public class Room {
         actionResponse.setID(username[0]);
 
         historyList.add(new OperationHistory(username[0], OperationHistoryType.GET_CARD, card1));
-        Mahjong.MahjongGetCardResponse.Builder builder1 = Mahjong.MahjongGetCardResponse.newBuilder();
-        builder1.setCard(card1);
+        Mahjong.CardsData.Builder builder1 = Mahjong.CardsData.newBuilder();
+        builder1.addCards(card1);
         Seat operationSeat = null;
         for (Seat seat : seats) {
             if (seat.getSeatNo() == seatNo) {
@@ -421,7 +432,7 @@ public class Room {
      * @param redisService
      */
     public void gameOver(GameBase.BaseConnection.Builder response, RedisService redisService, int card) {
-
+        Map<Integer, Integer> huCard = new HashMap<>();
         Map<Integer, Integer> seatScore = new HashMap<>();
         Map<Integer, Integer> maScore = new HashMap<>();
 
@@ -452,6 +463,7 @@ public class Room {
                 if (seat.getCardResult().getScore() > 0) {
                     winSeats.add(seat.getUserId());
                     userResult.setHuCard(card);
+                    huCard.put(seat.getUserId(), card);
                 } else {
                     loseSeats.add(seat.getSeatNo());
                 }
@@ -700,7 +712,7 @@ public class Room {
             seats.stream().filter(seat -> MahjongTcpService.userClients.containsKey(seat.getUserId()))
                     .forEach(seat -> MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId()));
         }
-        clear();
+        clear(huCard, maScore);
         //结束房间
         if (gameCount == gameTimes) {
             roomOver(response, redisService);
@@ -1041,13 +1053,22 @@ public class Room {
                 }
             }
 
-            Mahjong.MahjongBalanceResponse.Builder balance = Mahjong.MahjongBalanceResponse.newBuilder();
-            for (Seat seat : seats) {
-                Mahjong.MahjongSeatGameBalance.Builder seatGameOver = Mahjong.MahjongSeatGameBalance.newBuilder()
-                        .setID(seat.getUserId()).setMinggang(seat.getMinggang()).setAngang(seat.getAngang())
-                        .setZimoCount(seat.getZimoCount()).setHuCount(seat.getHuCount())
-                        .setDianpaoCount(seat.getDianpaoCount()).setWinOrLose(seat.getScore());
-                balance.addGameBalance(seatGameOver);
+            if (0 != recordList.size()) {
+                Mahjong.MahjongBalanceResponse.Builder balance = Mahjong.MahjongBalanceResponse.newBuilder();
+                for (Seat seat : seats) {
+                    Mahjong.MahjongSeatGameBalance.Builder seatGameOver = Mahjong.MahjongSeatGameBalance.newBuilder()
+                            .setID(seat.getUserId()).setMinggang(seat.getMinggang()).setAngang(seat.getAngang())
+                            .setZimoCount(seat.getZimoCount()).setHuCount(seat.getHuCount())
+                            .setDianpaoCount(seat.getDianpaoCount()).setWinOrLose(seat.getScore());
+                    balance.addGameBalance(seatGameOver);
+                }
+
+                for (Seat seat : seats) {
+                    if (MahjongTcpService.userClients.containsKey(seat.getUserId())) {
+                        response.setOperationType(GameBase.OperationType.BALANCE).setData(balance.build().toByteString());
+                        MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
+                    }
+                }
             }
 
             StringBuilder people = new StringBuilder();
@@ -1065,8 +1086,6 @@ public class Room {
                     over.setBackKey(uuid);
                     over.setDateTime(new Date().getTime());
 
-                    response.setOperationType(GameBase.OperationType.BALANCE).setData(balance.build().toByteString());
-                    MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
                     response.setOperationType(GameBase.OperationType.OVER).setData(over.build().toByteString());
                     MahjongTcpService.userClients.get(seat.getUserId()).send(response.build(), seat.getUserId());
                 }
@@ -1099,6 +1118,9 @@ public class Room {
                 gameRule.put("ghost", ghost);
                 gameRule.put("gameRule", gameRules);
                 gameRule.put("initMaCount", initMaCount);
+                gameRule.put("baseScore", baseScore);
+                gameRule.put("rogue", fan);
+                gameRule.put("maCards", JSON.toJSONString(ma));
                 jsonObject.put("gameRule", gameRule.toJSONString());
                 jsonObject.put("gameData", JSON.toJSONString(recordList, feature, features).getBytes());
                 jsonObject.put("scoreData", JSON.toJSONString(totalScores, feature, features).getBytes());
@@ -1216,7 +1238,7 @@ public class Room {
                     score *= 2;
                 }
             }
-            if (banker == userId) {
+            if (banker == userId && 1 == (gameRules >> 13) % 2) {
                 score *= 2;
                 scoreTypes.add(ScoreType.ZHUANGYING);
             }
@@ -1226,7 +1248,7 @@ public class Room {
             int loseSize[] = {0};
             int finalScore = score;
             seats.stream().filter(seat -> seat.getUserId() != userId).forEach(seat -> {
-                if (seat.getUserId() == banker) {
+                if (seat.getUserId() == banker && 1 == (gameRules >> 13) % 2) {
                     scoreTypes.add(ScoreType.ZHUANGYING);
                     seat.setCardResult(new GameResult(scoreTypes, huSeat[0].getCards().get(huSeat[0].getCards().size() - 1), -2 * finalScore));
                 } else {
@@ -1245,7 +1267,7 @@ public class Room {
             }
             huSeat[0].setZimoCount(huSeat[0].getZimoCount() + 1);
 
-            Mahjong.MahjongHuResponse.Builder mahjongHuResponse = Mahjong.MahjongHuResponse.newBuilder().setCard(huSeat[0].getCards().size() - 1);
+            Mahjong.MahjongHuResponse.Builder mahjongHuResponse = Mahjong.MahjongHuResponse.newBuilder().addCards(huSeat[0].getCards().size() - 1);
             for (ScoreType scoreType : huSeat[0].getCardResult().getScoreTypes()) {
                 mahjongHuResponse.addScoreType(Mahjong.ScoreType.forNumber(scoreType.ordinal() - 3));
             }
@@ -1340,7 +1362,7 @@ public class Room {
                 scoreTypes.add(ScoreType.AN_GANG);
 
                 final int[] loseScore = {0};
-                if (banker == seat.getUserId()) {
+                if (banker == seat.getUserId() && 1 == (gameRules >> 13) % 2) {
                     seats.stream().filter(seat1 -> seat1.getSeatNo() != seat.getSeatNo())
                             .forEach(seat1 -> {
                                 seat1.getAnGangResult().add(new GameResult(scoreTypes, card.get(0), -4));
@@ -1350,7 +1372,7 @@ public class Room {
                 } else {
                     seats.stream().filter(seat1 -> seat1.getSeatNo() != seat.getSeatNo())
                             .forEach(seat1 -> {
-                                if (banker == seat1.getUserId()) {
+                                if (banker == seat1.getUserId() && 1 == (gameRules >> 13) % 2) {
                                     seat1.getAnGangResult().add(new GameResult(scoreTypes, card.get(0), -4));
                                     loseScore[0] += 4;
                                 } else {
@@ -1364,7 +1386,7 @@ public class Room {
                 seat.setAngang(seat.getAngang() + 1);
                 historyList.add(new OperationHistory(seat.getUserId(), OperationHistoryType.AN_GANG, card.get(0)));
 
-                actionResponse.setOperationId(GameBase.ActionId.AN_GANG).setData(Mahjong.MahjongGang.newBuilder().addAllCard(card).build().toByteString());
+                actionResponse.setOperationId(GameBase.ActionId.AN_GANG).setData(Mahjong.CardsData.newBuilder().addAllCards(card).build().toByteString());
                 response.setOperationType(GameBase.OperationType.ACTION).setData(actionResponse.build().toByteString());
                 seats.stream().filter(seat1 -> MahjongTcpService.userClients.containsKey(seat1.getUserId()))
                         .forEach(seat1 -> MahjongTcpService.userClients.get(seat1.getUserId()).send(response.build(), seat1.getUserId()));
@@ -1384,7 +1406,7 @@ public class Room {
                 scoreTypes.add(ScoreType.BA_GANG);
 
                 final int[] loseScore = {0};
-                if (banker == seat.getUserId()) {
+                if (banker == seat.getUserId() && 1 == (gameRules >> 13) % 2) {
                     seats.stream().filter(seat1 -> seat1.getSeatNo() != seat.getSeatNo())
                             .forEach(seat1 -> {
                                 seat1.getMingGangResult().add(new GameResult(scoreTypes, card.get(0), -2));
@@ -1394,7 +1416,7 @@ public class Room {
                 } else {
                     seats.stream().filter(seat1 -> seat1.getSeatNo() != seat.getSeatNo())
                             .forEach(seat1 -> {
-                                if (banker == seat1.getUserId()) {
+                                if (banker == seat1.getUserId() && 1 == (gameRules >> 13) % 2) {
                                     seat1.getMingGangResult().add(new GameResult(scoreTypes, card.get(0), -2));
                                     loseScore[0] += 2;
                                 } else {
@@ -1408,7 +1430,7 @@ public class Room {
                 seat.setMinggang(seat.getMinggang() + 1);
                 historyList.add(new OperationHistory(seat.getUserId(), OperationHistoryType.BA_GANG, card.get(0)));
 
-                actionResponse.setOperationId(GameBase.ActionId.BA_GANG).setData(Mahjong.MahjongGang.newBuilder().addAllCard(card).build().toByteString());
+                actionResponse.setOperationId(GameBase.ActionId.BA_GANG).setData(Mahjong.CardsData.newBuilder().addAllCards(card).build().toByteString());
                 response.setOperationType(GameBase.OperationType.ACTION).setData(actionResponse.build().toByteString());
                 seats.stream().filter(seat1 -> MahjongTcpService.userClients.containsKey(seat1.getUserId()))
                         .forEach(seat1 -> MahjongTcpService.userClients.get(seat1.getUserId()).send(response.build(), seat1.getUserId()));
@@ -1615,7 +1637,7 @@ public class Room {
                     scoreTypes.add(ScoreType.DIAN_GANG);
 
                     //庄家点闲家或者闲家点庄家
-                    if ((banker == seat.getUserId() || banker == operationSeat.getUserId())) {
+                    if ((banker == seat.getUserId() || banker == operationSeat.getUserId()) && 1 == (gameRules >> 13) % 2) {
                         operationSeat.getMingGangResult().add(new GameResult(scoreTypes, card[0], 2 * (-count + 1)));
                         seat.getMingGangResult().add(new GameResult(scoreTypes, card[0], 2 * (count - 1)));
                     } else {
@@ -1628,8 +1650,7 @@ public class Room {
 
                     operationSeat.getPlayedCards().remove(operationSeat.getPlayedCards().size() - 1);
 
-                    actionResponse.setOperationId(GameBase.ActionId.DIAN_GANG).setData(Mahjong.MahjongGang.newBuilder()
-                            .addCard(card[0]).addCard(card[0]).addCard(card[0]).addCard(card[0]).build().toByteString());
+                    actionResponse.setOperationId(GameBase.ActionId.DIAN_GANG).setData(Mahjong.CardsData.newBuilder().addCards(card[0]).build().toByteString());
                     response.setOperationType(GameBase.OperationType.ACTION).setData(actionResponse.build().toByteString());
                     seats.stream().filter(seat1 -> MahjongTcpService.userClients.containsKey(seat1.getUserId()))
                             .forEach(seat1 -> MahjongTcpService.userClients.get(seat1.getUserId()).send(response.build(), seat1.getUserId()));
@@ -1648,7 +1669,7 @@ public class Room {
 
                     operationSeat.getPlayedCards().remove(operationSeat.getPlayedCards().size() - 1);
 
-                    actionResponse.setOperationId(GameBase.ActionId.PENG).setData(Mahjong.MahjongPengResponse.newBuilder().addCard(card[0]).addCard(card[0]).addCard(card[0]).build().toByteString());
+                    actionResponse.setOperationId(GameBase.ActionId.PENG).setData(Mahjong.CardsData.newBuilder().addCards(card[0]).build().toByteString());
                     response.setOperationType(GameBase.OperationType.ACTION).setData(actionResponse.build().toByteString());
                     seats.stream().filter(seat1 -> MahjongTcpService.userClients.containsKey(seat1.getUserId()))
                             .forEach(seat1 -> MahjongTcpService.userClients.get(seat1.getUserId()).send(response.build(), seat1.getUserId()));
@@ -1719,7 +1740,7 @@ public class Room {
                             seat.setPlayedCards(new ArrayList<>());
                         }
                         seat.getPlayedCards().add(card);
-                        Mahjong.MahjongPlayCard.Builder builder = Mahjong.MahjongPlayCard.newBuilder().setCard(card);
+                        Mahjong.CardsData.Builder builder = Mahjong.CardsData.newBuilder().addCards(card);
 
                         actionResponse.setOperationId(GameBase.ActionId.PLAY_CARD).setData(builder.build().toByteString());
 
