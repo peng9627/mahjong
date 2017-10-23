@@ -105,7 +105,7 @@ public class MahjongClient {
                             try {
                                 wait(10);
                             } catch (InterruptedException e) {
-                                e.printStackTrace();
+                                logger.error(e.toString(), e);
                             }
                         }
                         MahjongTcpService.userClients.put(userId, messageReceive);
@@ -699,7 +699,7 @@ public class MahjongClient {
                     break;
             }
         } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
+            logger.error(e.toString(), e);
         }
     }
 

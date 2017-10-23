@@ -1249,12 +1249,12 @@ public class Room {
             int finalScore = score;
             seats.stream().filter(seat -> seat.getUserId() != userId).forEach(seat -> {
                 if (seat.getUserId() == banker && 1 == (gameRules >> 13) % 2) {
-                    scoreTypes.add(ScoreType.ZHUANGYING);
+//                    scoreTypes.add(ScoreType.ZHUANGYING);
                     seat.setCardResult(new GameResult(scoreTypes, huSeat[0].getCards().get(huSeat[0].getCards().size() - 1), -2 * finalScore));
                 } else {
-                    if (scoreTypes.contains(ScoreType.ZHUANGYING)) {
-                        scoreTypes.remove(ScoreType.ZHUANGYING);
-                    }
+//                    if (scoreTypes.contains(ScoreType.ZHUANGYING)) {
+//                        scoreTypes.remove(ScoreType.ZHUANGYING);
+//                    }
                     seat.setCardResult(new GameResult(scoreTypes, huSeat[0].getCards().get(huSeat[0].getCards().size() - 1), -finalScore));
                 }
                 loseSize[0]++;
@@ -1262,7 +1262,7 @@ public class Room {
 
             if (banker == userId) {
                 huSeat[0].setCardResult(new GameResult(scoreTypes, huSeat[0].getCards().get(huSeat[0].getCards().size() - 1), loseSize[0] * score));
-            } else {
+            } else if (1 == (gameRules >> 13) % 2) {
                 huSeat[0].setCardResult(new GameResult(scoreTypes, huSeat[0].getCards().get(huSeat[0].getCards().size() - 1), (loseSize[0] + 1) * score));
             }
             huSeat[0].setZimoCount(huSeat[0].getZimoCount() + 1);
