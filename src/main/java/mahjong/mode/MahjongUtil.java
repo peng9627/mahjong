@@ -166,12 +166,13 @@ public class MahjongUtil {
     /**
      * 牌型
      *
-     * @param cards     手牌
-     * @param pengCards 碰的牌
-     * @param gangCard  杠的牌
+     * @param cards        手牌
+     * @param pengCards    碰的牌
+     * @param anGangCard   杠的牌
+     * @param mingGangCard 杠的牌
      * @return
      */
-    public static List<ScoreType> getHuType(List<Integer> cards, List<Integer> pengCards, List<Integer> gangCard, int gameRules, int gui) {
+    public static List<ScoreType> getHuType(List<Integer> cards, List<Integer> pengCards, List<Integer> anGangCard, List<Integer> mingGangCard, int gameRules, int gui) {
         List<ScoreType> scoreTypes = new ArrayList<>();
 
         if (1 == gameRules % 2) {
@@ -179,10 +180,10 @@ public class MahjongUtil {
         }
 
         //门清
-        if (14 == cards.size() && 1 == (gameRules >> 1) % 2) {
+        if (14 == cards.size() + anGangCard.size() && 1 == (gameRules >> 1) % 2) {
             scoreTypes.add(ScoreType.MENQING_HU);
         }
-        if (16 == gangCard.size() && 1 == (gameRules >> 7) % 2) {
+        if (16 == anGangCard.size() + mingGangCard.size() && 1 == (gameRules >> 7) % 2) {
             scoreTypes.add(ScoreType.SHIBALUOHAN);
             return scoreTypes;
         }
@@ -212,22 +213,22 @@ public class MahjongUtil {
                 List<Integer> dui = get_dui(temp);
                 switch (guiSize) {
                     case 1:
-                        if ((dui.size() == 4 && temp.size() == 4) || temp.size() == 1) {
+                        if ((dui.size() == 8 && temp.size() == 4) || temp.size() == 1) {
                             scoreTypes.add(ScoreType.PENGPENG_HU);
                         }
                         break;
                     case 2:
-                        if (dui.size() == 1 && temp.size() == 3) {
+                        if ((dui.size() == 2 && temp.size() == 3) || 0 == temp.size()) {
                             scoreTypes.add(ScoreType.PENGPENG_HU);
                         }
                         break;
                     case 3:
-                        if ((dui.size() == 8 && temp.size() == 8) || (dui.size() == 2 && temp.size() == 5) || temp.size() == 2) {
+                        if ((dui.size() == 8 && temp.size() == 8) || (dui.size() == 4 && temp.size() == 5) || temp.size() == 2) {
                             scoreTypes.add(ScoreType.PENGPENG_HU);
                         }
                         break;
                     case 4:
-                        if ((dui.size() == 10 && temp.size() == 10) || (dui.size() == 6 && temp.size() == 7) || (dui.size() > 1 && temp.size() == 4)) {
+                        if ((dui.size() == 10 && temp.size() == 10) || (dui.size() == 6 && temp.size() == 7) || (dui.size() > 1 && temp.size() == 4) || temp.size() == 1) {
                             scoreTypes.add(ScoreType.PENGPENG_HU);
                         }
                         break;
@@ -239,7 +240,8 @@ public class MahjongUtil {
         List<Integer> allCard = new ArrayList<>();
         allCard.addAll(cardList);
         allCard.addAll(pengCards);
-        allCard.addAll(gangCard);
+        allCard.addAll(anGangCard);
+        allCard.addAll(mingGangCard);
 
         temp.clear();
         temp.addAll(allCard);
@@ -260,7 +262,7 @@ public class MahjongUtil {
 
         //七对
 //        if (get_dui(cardList).size() == 14 && 1 == (gameRules >> 8) % 2) {//无鬼
-        if (cardList.size() == 14 && 14 - get_dui(temp).size() - guiSize <= 2 * guiSize && 1 == (gameRules >> 8) % 2 && 1 != gameRules % 2) {//有鬼
+        if (cardList.size() == 14 && 14 - get_dui(temp).size() - guiSize <= guiSize && 1 == (gameRules >> 8) % 2 && 1 != gameRules % 2) {//有鬼
             if (scoreTypes.contains(ScoreType.PENGPENG_HU)) {
                 scoreTypes.remove(ScoreType.PENGPENG_HU);
             }
