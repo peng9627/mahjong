@@ -213,7 +213,7 @@ public class MahjongUtil {
                 List<Integer> dui = get_dui(temp);
                 switch (guiSize) {
                     case 1:
-                        if ((dui.size() == 8 && temp.size() == 4) || temp.size() == 1) {
+                        if ((dui.size() == 4 && temp.size() == 4) || temp.size() == 1) {
                             scoreTypes.add(ScoreType.PENGPENG_HU);
                         }
                         break;

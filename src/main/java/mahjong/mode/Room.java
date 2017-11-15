@@ -1271,13 +1271,13 @@ public class Room {
             }
             huSeat[0].setZimoCount(huSeat[0].getZimoCount() + 1);
 
-            if (1 == (gameRules >> 14) && (1 == ghost || 3 == ghost) && 0 != Card.containSize(huSeat[0].getCards(), gui)) {
-                for (Seat seat : seats) {
-                    if (null != seat.getCardResult()) {
-                        seat.getCardResult().setScore(seat.getCardResult().getScore() * 2);
-                    }
-                }
-            }
+//            if (1 == (gameRules >> 14) && (1 == ghost || 3 == ghost) && 0 != Card.containSize(huSeat[0].getCards(), gui)) {
+//                for (Seat seat : seats) {
+//                    if (null != seat.getCardResult()) {
+//                        seat.getCardResult().setScore(seat.getCardResult().getScore() * 2);
+//                    }
+//                }
+//            }
 
             Mahjong.MahjongHuResponse.Builder mahjongHuResponse = Mahjong.MahjongHuResponse.newBuilder().addCards(huSeat[0].getCards().size() - 1);
             for (ScoreType scoreType : huSeat[0].getCardResult().getScoreTypes()) {
@@ -1287,8 +1287,9 @@ public class Room {
                     .setID(huSeat[0].getUserId()).setData(mahjongHuResponse.build().toByteString()).build().toByteString());
             seats.stream().filter(seat1 -> MahjongTcpService.userClients.containsKey(seat1.getUserId()))
                     .forEach(seat1 -> MahjongTcpService.userClients.get(seat1.getUserId()).send(response.build(), seat1.getUserId()));
+            int card = huSeat[0].getCards().get(huSeat[0].getCards().size() - 1);
             Card.remove(huSeat[0].getCards(), huSeat[0].getCards().get(huSeat[0].getCards().size() - 1));
-            gameOver(response, redisService, huSeat[0].getCards().get(huSeat[0].getCards().size() - 1));
+            gameOver(response, redisService, card);
             return;
         }
 
