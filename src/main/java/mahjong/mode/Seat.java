@@ -32,10 +32,12 @@ public class Seat {
     private List<GameResult> anGangResult = new ArrayList<>();        //暗杠
 
     private int huCount;//胡牌次数
-    private int zimoCount; //自摸次数
+    private int wuguiZimoCount; //自摸次数
+    private int youguiZimoCount; //自摸次数
     private int dianpaoCount; //点炮次数
     private int angang; //暗杠次数
     private int minggang; //明杠次数
+    private int zhongmaCount;
 
     private String ip;
     private int gameCount;
@@ -216,12 +218,20 @@ public class Seat {
         this.huCount = huCount;
     }
 
-    public int getZimoCount() {
-        return zimoCount;
+    public int getWuguiZimoCount() {
+        return wuguiZimoCount;
     }
 
-    public void setZimoCount(int zimoCount) {
-        this.zimoCount = zimoCount;
+    public void setWuguiZimoCount(int wuguiZimoCount) {
+        this.wuguiZimoCount = wuguiZimoCount;
+    }
+
+    public int getYouguiZimoCount() {
+        return youguiZimoCount;
+    }
+
+    public void setYouguiZimoCount(int youguiZimoCount) {
+        this.youguiZimoCount = youguiZimoCount;
     }
 
     public int getDianpaoCount() {
@@ -262,6 +272,14 @@ public class Seat {
 
     public void setGameCount(int gameCount) {
         this.gameCount = gameCount;
+    }
+
+    public int getZhongmaCount() {
+        return zhongmaCount;
+    }
+
+    public void setZhongmaCount(int zhongmaCount) {
+        this.zhongmaCount = zhongmaCount;
     }
 
     public void clear() {

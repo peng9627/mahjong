@@ -943,11 +943,11 @@ public final class Xingning {
         };
 
         public static com.google.protobuf.Parser<XingningMahjongIntoResponse> parser() {
-            return PARSER;
-        }
+      return PARSER;
+    }
 
-        @java.lang.Override
-        public com.google.protobuf.Parser<XingningMahjongIntoResponse> getParserForType() {
+    @java.lang.Override
+    public com.google.protobuf.Parser<XingningMahjongIntoResponse> getParserForType() {
       return PARSER;
     }
 

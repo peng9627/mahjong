@@ -575,6 +575,7 @@ public class Room {
             for (Seat seat : seats) {
                 if (seat.getUserId() == winSeats.get(0)) {
                     maScore.put(seat.getSeatNo(), 2 * zhongMa * loseSeats.size());
+                    seat.setZhongmaCount(seat.getZhongmaCount() + zhongMa);
                     break;
                 }
             }
@@ -1062,8 +1063,9 @@ public class Room {
                 for (Seat seat : seats) {
                     Mahjong.MahjongSeatGameBalance.Builder seatGameOver = Mahjong.MahjongSeatGameBalance.newBuilder()
                             .setID(seat.getUserId()).setMinggang(seat.getMinggang()).setAngang(seat.getAngang())
-                            .setZimoCount(seat.getZimoCount()).setHuCount(seat.getHuCount())
-                            .setDianpaoCount(seat.getDianpaoCount()).setWinOrLose(seat.getScore());
+                            .setDianpaoCount(seat.getDianpaoCount()).setWinOrLose(seat.getScore()).setHuCount(seat.getHuCount())
+                            .setWuguiZimoCount(seat.getWuguiZimoCount()).setYouguiZimoCount(seat.getYouguiZimoCount())
+                            .setZhongmaCount(seat.getZhongmaCount());
                     balance.addGameBalance(seatGameOver);
                 }
 
@@ -1140,22 +1142,6 @@ public class Room {
         redisService.delete("room" + roomNo);
         redisService.delete("room_type" + roomNo);
         roomNo = null;
-    }
-
-    private int getMaiSeat(int seatNo, Integer ma) {
-        if (Card.ma_my().contains(ma)) {
-            return seatNo;
-        }
-        if (Card.ma_next().contains(ma)) {
-            return (seatNo + 1) % count;
-        }
-        if (Card.ma_opposite().contains(ma)) {
-            return (seatNo + 2) % count;
-        }
-        if (Card.ma_last().contains(ma)) {
-            return (seatNo + 3) % count;
-        }
-        return 0;
     }
 
     /**
@@ -1269,7 +1255,11 @@ public class Room {
             } else {
                 huSeat[0].setCardResult(new GameResult(scoreTypes, huSeat[0].getCards().get(huSeat[0].getCards().size() - 1), loseSize[0] * score));
             }
-            huSeat[0].setZimoCount(huSeat[0].getZimoCount() + 1);
+            if (0 == Card.containSize(huSeat[0].getCards(), gui)) {
+                huSeat[0].setWuguiZimoCount(huSeat[0].getWuguiZimoCount() + 1);
+            } else {
+                huSeat[0].setYouguiZimoCount(huSeat[0].getYouguiZimoCount() + 1);
+            }
 
 //            if (1 == (gameRules >> 14) && (1 == ghost || 3 == ghost) && 0 != Card.containSize(huSeat[0].getCards(), gui)) {
 //                for (Seat seat : seats) {
