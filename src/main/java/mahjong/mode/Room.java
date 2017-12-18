@@ -1794,7 +1794,7 @@ public class Room {
             seatResponse.setHead(seat1.getHead());
             seatResponse.setSex(seat1.isSex());
             seatResponse.setOffline(seat1.isRobot());
-            seatResponse.setIsRobot(seat1.isRobot());
+            seatResponse.setIsRobot(false);
             seatResponse.setIp(seat1.getIp());
             seatResponse.setGameCount(seat1.getGameCount());
             roomSeatsInfo.addSeats(seatResponse.build());
