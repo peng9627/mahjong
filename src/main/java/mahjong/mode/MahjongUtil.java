@@ -304,6 +304,21 @@ public class MahjongUtil {
 
         //幺九
         if (Card.isYJ(temp) && 1 == (gameRules >> 3) % 2) {
+            if (scoreTypes.contains(ScoreType.QIXIAODUI_HU)) {
+                scoreTypes.remove(ScoreType.QIXIAODUI_HU);
+            }
+            if (scoreTypes.contains(ScoreType.HAOHUAQIXIAODUI_HU)) {
+                scoreTypes.remove(ScoreType.HAOHUAQIXIAODUI_HU);
+            }
+            if (scoreTypes.contains(ScoreType.SHUANGHAOHUAQIXIAODUI_HU)) {
+                scoreTypes.remove(ScoreType.SHUANGHAOHUAQIXIAODUI_HU);
+            }
+            if (scoreTypes.contains(ScoreType.SANHAOHUAQIXIAODUI_HU)) {
+                scoreTypes.remove(ScoreType.SANHAOHUAQIXIAODUI_HU);
+            }
+            if (scoreTypes.contains(ScoreType.PENGPENG_HU)) {
+                scoreTypes.remove(ScoreType.PENGPENG_HU);
+            }
             if (!Card.hasSameColor(temp, 3) && !Card.hasSameColor(temp, 4)) {
                 scoreTypes.add(ScoreType.QUANYAOJIU_HU);
             } else {
@@ -323,13 +338,11 @@ public class MahjongUtil {
         }
 
         //十三幺
-        if (Card.isSSY(cardList, guiSize) && 1 == (gameRules >> 5) % 2) {
-            scoreTypes.add(ScoreType.SHISANYAO_HU);
-        }
-
-        if (scoreTypes.contains(ScoreType.SHISANYAO_HU)) {
+        if (Card.isSSY(cardList, guiSize)) {
             scoreTypes.clear();
-            scoreTypes.add(ScoreType.SHISANYAO_HU);
+            if (1 == (gameRules >> 5) % 2) {
+                scoreTypes.add(ScoreType.SHISANYAO_HU);
+            }
         }
 
         return scoreTypes;
@@ -354,9 +367,9 @@ public class MahjongUtil {
                     score += 6;
                     break;
                 case QINGYISE_HU:
-                case HUNYAOJIU_HU:
                     score += 8;
                     break;
+                case HUNYAOJIU_HU:
                 case HAOHUAQIXIAODUI_HU:
                     score += 12;
                     break;
@@ -549,12 +562,12 @@ public class MahjongUtil {
         List<Integer> pairs = get_dui(handVals);
 
         //鸡胡没有七对
-        if (1 != gameRules % 2) {
-            //检查七对
-            if (pairs.size() == 14) {
-                return true;
-            }
+//        if (1 != gameRules % 2) {
+        //检查七对
+        if (pairs.size() == 14) {
+            return true;
         }
+//        }
 
         //检测十三幺
         if (Card.isSSY(handVals, 0)) {

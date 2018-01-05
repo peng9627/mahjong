@@ -1210,11 +1210,11 @@ public class Room {
             List<ScoreType> scoreTypes = MahjongUtil.getHuType(huSeat[0].getCards(), huSeat[0].getPengCards(), huSeat[0].getAnGangCards(), huSeat[0].getMingGangCards(), gameRules, gui);
             int score = MahjongUtil.getScore(scoreTypes);
             if (0 == score) {
-                if (1 == gameRules % 2) {
-                    score = 1;
-                } else {
+//                if (1 == gameRules % 2) {
+//                    score = 1;
+//                } else {
                     score = 2;
-                }
+//                }
             }
             scoreTypes.add(ScoreType.ZIMO_HU);
             //天胡
@@ -1234,6 +1234,7 @@ public class Room {
             }
             if (1 == (gameRules >> 14) % 2 && 0 == Card.containSize(huSeat[0].getCards(), gui)) {
                 score *= 2;
+                scoreTypes.add(ScoreType.WUGUIJIABEI);
             }
             int loseSize[] = {0};
             int finalScore = score;
