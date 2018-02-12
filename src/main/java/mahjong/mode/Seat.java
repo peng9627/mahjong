@@ -39,6 +39,11 @@ public class Seat {
     private int minggang; //明杠次数
     private int zhongmaCount;
 
+    private int gameMingGangCount;
+    private int gameAnGangCount;
+    private int gameDianGangCount;
+
+
     private String ip;
     private int gameCount;
 
@@ -258,6 +263,30 @@ public class Seat {
         this.minggang = minggang;
     }
 
+    public int getGameMingGangCount() {
+        return gameMingGangCount;
+    }
+
+    public void setGameMingGangCount(int gameMingGangCount) {
+        this.gameMingGangCount = gameMingGangCount;
+    }
+
+    public int getGameAnGangCount() {
+        return gameAnGangCount;
+    }
+
+    public void setGameAnGangCount(int gameAnGangCount) {
+        this.gameAnGangCount = gameAnGangCount;
+    }
+
+    public int getGameDianGangCount() {
+        return gameDianGangCount;
+    }
+
+    public void setGameDianGangCount(int gameDianGangCount) {
+        this.gameDianGangCount = gameDianGangCount;
+    }
+
     public String getIp() {
         return ip;
     }
@@ -295,5 +324,8 @@ public class Seat {
         cardResult = null;
         mingGangResult.clear();
         anGangResult.clear();
+        gameMingGangCount = 0;
+        gameAnGangCount = 0;
+        gameDianGangCount = 0;
     }
 }

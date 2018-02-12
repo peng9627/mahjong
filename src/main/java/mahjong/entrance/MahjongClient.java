@@ -452,11 +452,31 @@ public class MahjongClient {
                                 break;
                             case HU:
                                 room.getSeats().stream().filter(seat -> seat.getUserId() == userId).forEach(seat -> seat.setOperation(1));
+                                if (0 < room.getHistoryList().size()) {
+                                    if (0 == room.getHistoryList().get(room.getHistoryList().size() - 1).getHistoryType().compareTo(OperationHistoryType.BA_GANG)) {
+                                        if (room.checkAllQiangGang(room.getHistoryList().get(room.getHistoryList().size() - 1).getCards().get(0), response, redisService)) {
+                                            room.hu(userId, response, redisService);//胡
+                                        }
+                                        break;
+                                    }
+                                }
                                 room.hu(userId, response, redisService);//胡
                                 break;
                             case PASS:
                                 room.getSeats().stream().filter(seat -> seat.getUserId() == userId).forEach(seat -> {
                                     if (room.getOperationSeatNo() != seat.getSeatNo()) {
+
+                                        if (0 < room.getHistoryList().size()) {
+                                            if (0 == room.getHistoryList().get(room.getHistoryList().size() - 1).getHistoryType().compareTo(OperationHistoryType.BA_GANG)) {
+                                                seat.setOperation(4);
+                                                room.checkQiangGangPass(room.getHistoryList().get(room.getHistoryList().size() - 1).getCards().get(0), response, redisService);
+                                                if (room.checkAllQiangGang(room.getHistoryList().get(room.getHistoryList().size() - 1).getCards().get(0), response, redisService)) {
+                                                    room.hu(userId, response, redisService);
+                                                }
+                                                return;
+                                            }
+                                        }
+
                                         if (0 < room.getHistoryList().size()) {
                                             if (0 != room.getHistoryList().get(room.getHistoryList().size() - 1).getHistoryType().compareTo(OperationHistoryType.PLAY_CARD)) {
                                                 return;
@@ -466,6 +486,9 @@ public class MahjongClient {
                                         messageReceive.send(response.setOperationType(GameBase.OperationType.ACTION).setData(actionResponse.build().toByteString()).build(), userId);
                                         seat.setOperation(4);
                                         if (!room.passedChecked()) {//如果都操作完了，继续摸牌
+                                            room.getSeats().forEach(seat1 -> {
+                                                seat1.setOperation(0);
+                                            });
                                             room.getCard(response, room.getNextSeat(), redisService);
                                         } else {//if (room.checkSurplus()) { //如果可以碰、杠牌，则碰、杠
                                             room.pengOrGang(actionResponse, response, redisService, userId);

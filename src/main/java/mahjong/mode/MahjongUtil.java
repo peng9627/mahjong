@@ -180,7 +180,7 @@ public class MahjongUtil {
         }
 
         //门清
-        if (14 == cards.size() + anGangCard.size() && 1 == (gameRules >> 1) % 2) {
+        if (14 == cards.size() + (anGangCard.size() / 4 * 3) && 1 == (gameRules >> 1) % 2) {
             scoreTypes.add(ScoreType.MENQING_HU);
         }
         if (16 == anGangCard.size() + mingGangCard.size() && 1 == (gameRules >> 7) % 2) {
@@ -203,13 +203,13 @@ public class MahjongUtil {
             temp.addAll(cardList);
             List<Integer> san = get_san(temp);
             Card.removeAll(temp, san);
+            //有鬼牌
+            for (int i = 0; i < guiSize; i++) {
+                Card.remove(temp, gui);
+            }
             if (temp.size() == 2 && temp.get(0).intValue() == temp.get(1)) {
                 scoreTypes.add(ScoreType.PENGPENG_HU);
             } else {
-                //有鬼牌
-                for (int i = 0; i < guiSize; i++) {
-                    Card.remove(temp, gui);
-                }
                 List<Integer> dui = get_dui(temp);
                 switch (guiSize) {
                     case 1:
@@ -218,7 +218,7 @@ public class MahjongUtil {
                         }
                         break;
                     case 2:
-                        if ((dui.size() == 2 && temp.size() == 3) || 0 == temp.size()) {
+                        if ((dui.size() == 2 && temp.size() == 3) || (dui.size() == 6 && temp.size() == 6) || 0 == temp.size()) {
                             scoreTypes.add(ScoreType.PENGPENG_HU);
                         }
                         break;
@@ -303,19 +303,7 @@ public class MahjongUtil {
         }
 
         //幺九
-        if (Card.isYJ(temp) && 1 == (gameRules >> 3) % 2) {
-            if (scoreTypes.contains(ScoreType.QIXIAODUI_HU)) {
-                scoreTypes.remove(ScoreType.QIXIAODUI_HU);
-            }
-            if (scoreTypes.contains(ScoreType.HAOHUAQIXIAODUI_HU)) {
-                scoreTypes.remove(ScoreType.HAOHUAQIXIAODUI_HU);
-            }
-            if (scoreTypes.contains(ScoreType.SHUANGHAOHUAQIXIAODUI_HU)) {
-                scoreTypes.remove(ScoreType.SHUANGHAOHUAQIXIAODUI_HU);
-            }
-            if (scoreTypes.contains(ScoreType.SANHAOHUAQIXIAODUI_HU)) {
-                scoreTypes.remove(ScoreType.SANHAOHUAQIXIAODUI_HU);
-            }
+        if (Card.isYJ(temp) && 1 == (gameRules >> 3) % 2 && !(cardList.size() == 14 && 14 - get_dui(temp).size() - guiSize <= guiSize && 1 == (gameRules >> 8) % 2 && 1 != gameRules % 2)) {
             if (scoreTypes.contains(ScoreType.PENGPENG_HU)) {
                 scoreTypes.remove(ScoreType.PENGPENG_HU);
             }
@@ -334,6 +322,9 @@ public class MahjongUtil {
             }
             if (scoreTypes.contains(ScoreType.HUNYAOJIU_HU)) {
                 scoreTypes.remove(ScoreType.HUNYAOJIU_HU);
+            }
+            if (scoreTypes.contains(ScoreType.PENGPENG_HU)) {
+                scoreTypes.remove(ScoreType.PENGPENG_HU);
             }
         }
 
@@ -430,6 +421,19 @@ public class MahjongUtil {
 
     public static ArrayList<Integer> getComputePossible(List<Integer> hand_list, int number) {
         Set<Integer> ret = new HashSet<>();
+        ret.add(1);
+        ret.add(9);
+        ret.add(11);
+        ret.add(19);
+        ret.add(21);
+        ret.add(29);
+        ret.add(31);
+        ret.add(33);
+        ret.add(35);
+        ret.add(41);
+        ret.add(43);
+        ret.add(45);
+        ret.add(47);
         for (int i = 0; i < hand_list.size(); i++) {
             int mahjong = hand_list.get(i);
             if (!ret.contains(mahjong)) {

@@ -70,6 +70,9 @@ public class OperationTimeout extends Thread {
                                         .setData(GameBase.BaseAction.newBuilder().setOperationId(GameBase.ActionId.PASS).clearData().build().toByteString()).build(), userId);
                             }
                             if (!room.passedChecked()) {//如果都操作完了，继续摸牌
+                                room.getSeats().forEach(seat1 -> {
+                                    seat1.setOperation(0);
+                                });
                                 room.getCard(response, room.getNextSeat(), redisService);
                             } else {//if (room.checkSurplus()) { //如果可以碰、杠牌，则碰、杠
                                 room.pengOrGang(GameBase.BaseAction.newBuilder().setID(seat.getUserId()), response, redisService, userId);

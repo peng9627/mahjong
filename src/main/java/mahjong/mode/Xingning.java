@@ -171,7 +171,7 @@ public final class Xingning {
 
         public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-            return mahjong.mode.Xingning.internal_static_XingningMahjongIntoResponse_descriptor;
+      return mahjong.mode.Xingning.internal_static_XingningMahjongIntoResponse_descriptor;
         }
 
         protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -977,27 +977,27 @@ public final class Xingning {
                         "Response\022\021\n\tbaseScore\030\001 \001(\r\022\021\n\tgameTimes" +
                         "\030\002 \001(\r\022\021\n\tgameRules\030\003 \001(\r\022\r\n\005ghost\030\004 \001(\r" +
                         "\022\017\n\007maCount\030\005 \001(\r\022\r\n\005count\030\006 \001(\rB\016\n\014mahj" +
-                        "ong.modeb\006proto3"
+      "ong.modeb\006proto3"
+    };
+    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
+        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
+          public com.google.protobuf.ExtensionRegistry assignDescriptors(
+              com.google.protobuf.Descriptors.FileDescriptor root) {
+            descriptor = root;
+            return null;
+          }
         };
-        com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-                new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
-                    public com.google.protobuf.ExtensionRegistry assignDescriptors(
-                            com.google.protobuf.Descriptors.FileDescriptor root) {
-                        descriptor = root;
-                        return null;
-                    }
-                };
-        com.google.protobuf.Descriptors.FileDescriptor
-                .internalBuildGeneratedFileFrom(descriptorData,
-                        new com.google.protobuf.Descriptors.FileDescriptor[]{
-                        }, assigner);
-        internal_static_XingningMahjongIntoResponse_descriptor =
-                getDescriptor().getMessageTypes().get(0);
-        internal_static_XingningMahjongIntoResponse_fieldAccessorTable = new
-                com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-                internal_static_XingningMahjongIntoResponse_descriptor,
-                new java.lang.String[]{"BaseScore", "GameTimes", "GameRules", "Ghost", "MaCount", "Count",});
-    }
+    com.google.protobuf.Descriptors.FileDescriptor
+      .internalBuildGeneratedFileFrom(descriptorData,
+        new com.google.protobuf.Descriptors.FileDescriptor[] {
+        }, assigner);
+    internal_static_XingningMahjongIntoResponse_descriptor =
+      getDescriptor().getMessageTypes().get(0);
+    internal_static_XingningMahjongIntoResponse_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_XingningMahjongIntoResponse_descriptor,
+        new java.lang.String[] { "BaseScore", "GameTimes", "GameRules", "Ghost", "MaCount", "Count", });
+  }
 
-    // @@protoc_insertion_point(outer_class_scope)
+  // @@protoc_insertion_point(outer_class_scope)
 }
